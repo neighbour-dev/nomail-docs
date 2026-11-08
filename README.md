@@ -1,28 +1,19 @@
 # NoMail 文档
 
-本仓库集中维护 NoMail 的产品使用、自托管部署和平台接入文档。NoMail 由 App 和可自托管的服务端组成，文档以用户完成实际任务为主线，而不是以调用后端接口为主线。
+NoMail 是一个通知收件箱，由 App 和可自托管的服务端组成，将不同平台的事件与通知汇集起来，方便集中查看和管理。
 
-## 本地预览
+本仓库是 NoMail 的文档站，基于 VitePress 构建，以产品使用和实际任务为主线，同时提供面向后端与 App 开发的接口和平台协议参考。
 
-```bash
-pnpm install
-pnpm docs:dev
-```
+**文档地址：[nomail.sg](https://nomail.sg)**
 
-构建检查：`pnpm docs:build`。
-
-## 文档边界
+## 文档内容
 
 | 目录 | 内容 |
 |---|---|
-| `guide/` | 产品介绍、安装部署、平台接入与密钥管理 |
-| `reference/` | 面向开发者的接口细节、平台协议及 OpenAPI 入口 |
-| `research/` | 产品与竞品研究，不代表已实现功能 |
-| `archive/` | 历史分析，仅作背景参考，不作为当前接口契约 |
-
-
-
-VitePress 初始化的 `api-examples.md` 和 `markdown-examples.md` 暂时保留作编辑参考，不列入正式导航。
+| `guide/` | 产品介绍、自托管服务安装、平台接入与密钥管理 |
+| `reference/` | 接口使用、OpenAPI 入口及各平台 Webhook 协议 |
+| `research/` | 产品与竞品研究 |
+| `archive/` | 历史分析与背景资料，不作为当前接口契约 |
 
 ## 许可证
 
