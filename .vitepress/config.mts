@@ -89,7 +89,17 @@ export default defineConfig({
         items: [
           { text: '指南总览', link: '/guide/' },
           { text: '认识 NoMail', link: '/guide/introduction' },
-          { text: '安装与部署', link: '/guide/install' },
+          {
+            text: '安装与部署',
+            link: '/guide/install',
+            collapsed: false,
+            items: [
+              { text: 'Docker Compose', link: '/guide/install/docker' },
+              { text: '发布二进制', link: '/guide/install/binary' },
+              { text: '源码构建', link: '/guide/install/source' },
+              { text: 'Cloudflare Workers', link: '/guide/install/workers' }
+            ]
+          },
           { text: '连接通知来源', link: '/guide/sources' }
         ]
       },
