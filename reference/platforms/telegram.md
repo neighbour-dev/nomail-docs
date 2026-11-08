@@ -1,4 +1,9 @@
-# Telegram Bot API
+---
+title: Telegram Bot Webhook 与 Update 请求响应协议 | NoMail
+description: 查阅 Telegram setWebhook、Secret Token、Update 类型、消息与查询字段，区分 HTTP 确认和按钮、内联搜索、配送及结账业务应答。
+---
+
+# Telegram Bot API Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

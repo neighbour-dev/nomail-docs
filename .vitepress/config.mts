@@ -1,16 +1,59 @@
 import { defineConfig } from 'vitepress'
+import { canonicalUrl, pageSeoHead, publisherName, siteDescription, siteUrl, verificationHead } from './seo.mts'
+
+const noindexUrls = new Set<string>()
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   lang: 'zh-CN',
   title: 'NoMail 文档',
-  description: 'NoMail 通知收件箱的使用、自托管部署与平台接入指南',
+  titleTemplate: false,
+  description: siteDescription,
   srcExclude: ['README.md'],
   cleanUrls: true,
+  lastUpdated: true,
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' }],
+    ...verificationHead(process.env)
+  ],
+  transformPageData(pageData) {
+    const noindex = pageData.frontmatter.noindex === true
+    if (noindex) {
+      noindexUrls.add(canonicalUrl(pageData.relativePath))
+      pageData.frontmatter.search = false
+    }
+    // 写入页面数据，让静态 HTML 与客户端路由切换使用同一套元信息。
+    pageData.frontmatter.head = [
+      ...(pageData.frontmatter.head ?? []),
+      ...pageSeoHead({
+        relativePath: pageData.relativePath,
+        title: pageData.title,
+        description: pageData.description,
+        lastUpdated: pageData.lastUpdated,
+        noindex
+      })
+    ]
+  },
+  transformHead({ pageData }) {
+    return pageData.isNotFound
+      ? [['meta', { name: 'robots', content: 'noindex, follow' }]]
+      : []
+  },
   sitemap: {
-    hostname: 'https://nomail.sg'
+    hostname: siteUrl,
+    transformItems: items => items.filter(item => !noindexUrls.has(canonicalUrl(item.url)))
   },
   themeConfig: {
+    lastUpdated: {
+      formatOptions: {
+        dateStyle: 'medium',
+        timeStyle: 'long'
+      }
+    },
+    footer: {
+      message: `NoMail · ${publisherName} · <a href="https://github.com/Neighbour-sg/nomail-docs">文档源码</a> · <a href="https://github.com/Neighbour-sg/nomail-docs/blob/main/LICENSE">AGPLv3</a>`
+    },
     search: {
       provider: 'local',
       options: {
@@ -44,19 +87,17 @@ export default defineConfig({
       {
         text: '使用指南',
         items: [
+          { text: '指南总览', link: '/guide/' },
           { text: '认识 NoMail', link: '/guide/introduction' },
           { text: '安装与部署', link: '/guide/install' },
-          { text: '连接通知来源', link: '/guide/sources' },
-          { text: '凭据加密密钥', link: '/guide/secret-encryption-key' }
+          { text: '连接通知来源', link: '/guide/sources' }
         ]
       },
       {
-        text: '开发者参考',
+        text: '平台协议参考',
         collapsed: true,
         items: [
-          { text: 'OpenAPI', link: '/reference/openapi' },
-          { text: 'Webhook 配置接口', link: '/reference/webhook-config' },
-          { text: '消息游标查询', link: '/reference/message-cursor' },
+          { text: '平台协议总览', link: '/reference/' },
           {
             text: '平台 Webhook 协议',
             collapsed: false,
@@ -77,11 +118,10 @@ export default defineConfig({
         ]
       },
       {
-        text: '研究与历史归档',
+        text: '产品研究',
         collapsed: true,
         items: [
-          { text: '主要竞品对比', link: '/research/competitors' },
-          { text: '历史接口缺口分析', link: '/archive/missing-apis' }
+          { text: '主要竞品对比', link: '/research/competitors' }
         ]
       }
     ],

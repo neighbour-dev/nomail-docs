@@ -1,4 +1,9 @@
-# Shopify
+---
+title: Shopify Webhook HMAC、资源与隐私合规协议 | NoMail
+description: 查阅 Shopify HTTPS Webhook 的 HMAC-SHA256、投递头、资源字段裁剪、三种隐私合规请求、确认时限与测试及重试规则。
+---
+
+# Shopify Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

@@ -1,4 +1,9 @@
-# App Store Connect
+---
+title: App Store Connect Webhook 签名与通知协议 | NoMail
+description: 查阅 App Store Connect 的 HMAC 签名、完整订阅事件枚举、App 与构建状态、TestFlight 和后台资源通知结构，以及 Ping 的官方资料边界。
+---
+
+# App Store Connect Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

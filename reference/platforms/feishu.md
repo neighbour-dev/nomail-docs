@@ -1,4 +1,9 @@
-# 飞书
+---
+title: 飞书事件订阅、加密验签与卡片回调协议 | NoMail
+description: 查阅飞书地址验证、v1/v2 事件、新旧卡片回调与链接预览的 Token、签名、AES-CBC 加密、字段结构、同步响应和重试规则。
+---
+
+# 飞书 Webhook 事件与回调协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

@@ -1,4 +1,9 @@
-# Stripe
+---
+title: Stripe Webhook 验签、事件格式与授权响应协议 | NoMail
+description: 区分 Stripe Snapshot、Thin 通知和 Issuing 实时授权，查阅带时间戳签名、事件字段、同步决策响应以及重试、轮换和去重语义。
+---
+
+# Stripe Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

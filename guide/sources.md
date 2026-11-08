@@ -1,4 +1,9 @@
-# 连接通知来源
+---
+title: NoMail 平台接入指南 - 连接 Webhook 通知来源
+description: 准备 NoMail 接收地址、来源平台权限与验证凭据，完成两侧 Webhook 配置、事件订阅和测试投递，并排查通知未送达的常见问题。
+---
+
+# 连接 Webhook 通知来源
 
 NoMail 通过 Webhook 接收来源平台的事件。接入时，需要在 NoMail 和来源平台两侧完成配置，而不是只填一个平台名称。
 
@@ -30,7 +35,7 @@ NoMail 通过 Webhook 接收来源平台的事件。接入时，需要在 NoMail
 | [Telegram](../reference/platforms/telegram.md) | Webhook Secret Token | 不是 Bot Token |
 | [Shopify](../reference/platforms/shopify.md) | 应用 Client Secret | 不是店铺访问令牌 |
 
-请妥善保存原始凭据，NoMail 不会通过查询配置回显秘密值。部署时的 `SECRET_ENCRYPTION_KEY` 用于保护这些凭据，与各平台的接收密钥不同，详见[凭据加密密钥](secret-encryption-key.md)。
+请妥善保存原始凭据，NoMail 不会通过查询配置回显秘密值。部署时的 `SECRET_ENCRYPTION_KEY` 用于保护这些凭据，与各平台的接收密钥不同，详见[安装与部署：配置加密密钥](install.md#配置加密密钥)。
 
 ## 没有收到消息时
 

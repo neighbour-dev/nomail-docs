@@ -1,4 +1,9 @@
-# 安装与部署
+---
+title: NoMail 服务端安装与部署指南
+description: 使用 Docker Compose、发布二进制、源码或 Cloudflare Workers 部署 NoMail 服务端，配置初始账号与密钥，并了解备份、升级和账号恢复流程。
+---
+
+# NoMail 服务端安装与部署
 
 NoMail 由 App 和可自托管的服务端组成：服务端接收并保存来自不同平台的通知，App 用于查看和管理消息。本文介绍如何部署服务端，为 NoMail App 准备自己的服务地址。
 
@@ -32,6 +37,10 @@ cd nomail-api
 | `INITIAL_USERNAME` | 数据库账号表为空时创建的初始用户名 |
 | `INITIAL_PASSWORD` | 初始密码，至少 8 个字符，包含英文字母和数字，最多 72 字节 |
 
+### 配置加密密钥
+
+`SECRET_ENCRYPTION_KEY` 用于加密和解密服务端保存的平台敏感凭据，例如 Webhook 密钥。它与平台侧的接收密钥不同，必须是 Base64 编码的 32 字节随机数据，供 AES-256-GCM 使用，不能用普通密码或任意字符串代替。
+
 如果安装了 OpenSSL，可分别运行下面两条命令，第一条输出填入 `JWT_SECRET`，第二条填入 `SECRET_ENCRYPTION_KEY`：
 
 ```bash
@@ -39,7 +48,13 @@ openssl rand -hex 32
 openssl rand -base64 32
 ```
 
-也可以使用项目的密钥生成工具，见[加密密钥说明](secret-encryption-key.md)。JWT 密钥和凭据加密密钥应独立生成。
+JWT 密钥和凭据加密密钥应独立生成。将结果填入对应部署方式的 `.env`、`.dev.vars` 或 Workers Secret；不要把真实密钥提交到 Git，也不要写进示例配置文件。
+
+二进制和源码部署也可使用下文的 `gen-secret-key` 工具生成凭据加密密钥，无需为此单独安装源码构建环境。
+
+**安全备份并保持已有部署的加密密钥不变。密钥丢失或更换后，之前加密保存的平台凭据将无法解密；恢复数据库时也需要原密钥。**
+
+### 初始账号
 
 Server 在首次启动时初始化账号；Workers 在首次登录时初始化。**先使用初始账号登录并修改密码，再移除 `INITIAL_PASSWORD`**。已有账号不会因重新设置初始配置而被覆盖。
 

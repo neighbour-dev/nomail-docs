@@ -1,4 +1,9 @@
-# GitHub
+---
+title: GitHub Webhook 配置、验签与请求体协议 | NoMail
+description: 精确查阅 GitHub Webhook 的 JSON 与表单编码、HMAC-SHA256 签名、Ping、业务事件字段、10 秒确认要求和人工重投语义。
+---
+
+# GitHub Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

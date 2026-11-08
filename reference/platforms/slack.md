@@ -1,4 +1,9 @@
-# Slack
+---
+title: Slack 事件、命令与交互回调 HTTP 协议 | NoMail
+description: 查阅 Slack Events API、URL 验证、Slash Command、按钮、弹窗和动态菜单的签名校验、表单编码、请求字段、响应格式与三秒确认规则。
+---
+
+# Slack Webhook 与交互回调协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

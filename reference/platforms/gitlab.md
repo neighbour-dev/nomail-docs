@@ -1,4 +1,9 @@
-# GitLab
+---
+title: GitLab Webhook 签名认证与事件请求体协议 | NoMail
+description: 查阅 GitLab Signing Token、旧 Secret Token、自定义 JSON 模板、项目和组事件结构，以及 GitLab.com 超时、测试、重投和自动禁用规则。
+---
+
+# GitLab Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

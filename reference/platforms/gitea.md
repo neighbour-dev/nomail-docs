@@ -1,4 +1,9 @@
-# Gitea
+---
+title: Gitea Webhook 编码、签名与事件映射协议 | NoMail
+description: 依据 Gitea v1.25.5 官方实现，精确查阅 JSON、表单和 GET 的签名范围、事件头映射、Payload 字段、超时及 Replay UUID 变化。
+---
+
+# Gitea Webhook 协议
 
 [平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
 

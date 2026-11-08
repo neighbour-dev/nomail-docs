@@ -1,3 +1,8 @@
+---
+title: 平台 Webhook 鉴权、请求体与响应协议索引 | NoMail
+description: 对照 GitHub、GitLab、Stripe、Slack、飞书、Telegram、Shopify、Gitea 和 App Store Connect 的 Webhook 编码、鉴权方式、响应时限与专用回调。
+---
+
 # 平台 Webhook 协议索引
 
 | 项目 | 范围 |
