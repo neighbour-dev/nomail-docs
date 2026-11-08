@@ -20,6 +20,10 @@ pnpm docs:dev
 | `research/` | 产品与竞品研究，不代表已实现功能 |
 | `archive/` | 历史分析，仅作背景参考，不作为当前接口契约 |
 
-后端的贡献指南、发布规范、更新日志、crate 架构说明和自动生成的 `docs/swagger.json` 留在 `nomail-api`，随代码维护。迁入的文档原文来自 [nomail-api](https://github.com/neighbour-dev/nomail-api)，继续适用其[原有许可](https://github.com/neighbour-dev/nomail-api/blob/main/LICENSE)，本次迁移不变更授权。
+
 
 VitePress 初始化的 `api-examples.md` 和 `markdown-examples.md` 暂时保留作编辑参考，不列入正式导航。
+
+## 许可证
+
+除另有明确声明的第三方内容外，本仓库的文档和站点源码采用 **GNU Affero General Public License v3.0（`AGPL-3.0-only`）**，完整条款见仓库根目录的 [LICENSE](./LICENSE)。

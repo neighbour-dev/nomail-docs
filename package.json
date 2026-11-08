@@ -1,4 +1,5 @@
 {
+  "license": "AGPL-3.0-only",
   "devDependencies": {
     "vitepress": "2.0.0-alpha.21"
   },
