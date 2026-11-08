@@ -5,6 +5,7 @@ export default defineConfig({
   lang: 'zh-CN',
   title: 'NoMail 文档',
   description: 'NoMail 通知收件箱的使用、自托管部署与平台接入指南',
+  srcExclude: ['README.md'],
   sitemap: {
     hostname: 'https://nomail.sg'
   },
