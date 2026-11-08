@@ -6,6 +6,13 @@
   "routes": [
     { "pattern": "nomail.sg", "custom_domain": true }
   ],
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+      "persist": true
+    }
+  },
   "assets": {
     "directory": "./.vitepress/dist",
     "html_handling": "auto-trailing-slash",
