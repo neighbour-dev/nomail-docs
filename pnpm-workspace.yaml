@@ -1,0 +1,4 @@
+# 仅允许当前锁定版本的原生工具安装脚本，不全局放开依赖脚本。
+allowBuilds:
+  esbuild@0.28.2: true
+  workerd@1.20261104.1: true

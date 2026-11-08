@@ -2,3 +2,9 @@ node_modules/
 .vitepress/cache/
 .vitepress/dist/
 .DS_Store
+.wrangler/
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
