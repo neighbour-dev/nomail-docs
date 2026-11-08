@@ -9,8 +9,6 @@
     "docs:dev": "vitepress dev",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
-    "docs:workers:dev": "pnpm docs:build && wrangler dev --local",
-    "docs:deploy:check": "pnpm docs:build && wrangler deploy --dry-run",
-    "docs:deploy": "pnpm docs:build && wrangler deploy"
+    "docs:workers:dev": "pnpm docs:build && wrangler dev --local"
   }
 }
