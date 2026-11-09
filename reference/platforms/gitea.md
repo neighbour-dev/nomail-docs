@@ -1,100 +1,100 @@
 ---
-title: Gitea Webhook 编码、签名与事件映射协议 | NoMail
-description: 依据 Gitea v1.25.5 官方实现，精确查阅 JSON、表单和 GET 的签名范围、事件头映射、Payload 字段、超时及 Replay UUID 变化。
+title: Gitea Webhook encoding, signatures, and event mapping protocol | NoMail
+description: Reference JSON, form, and GET signature scopes, event header mappings, payloads, timeouts, and Replay UUID changes against the official Gitea v1.25.5 implementation.
 ---
 
-# Gitea Webhook 协议
+# Gitea Webhook protocol
 
-[平台索引](../webhook-platform-reference-2026-10-30.md) · [约束标记与算法符号](../webhook-contract-conventions.md)
+[Platform index](../webhook-platform-reference-2026-10-30.md) · [Constraint markers and algorithms](../webhook-contract-conventions.md)
 
-## 1. 范围与版本
+## 1. Scope and versions
 
-| 项目 | 定义 |
+| Item | Definition |
 |---|---|
-| 核对日期 | 2026-11-08 |
-| 精确实现基线 | **Gitea v1.25.5**；本页源码约束只承诺该版本，不混写最新文档行为 |
-| 适用类型 | Gitea 通用 Webhook；不是 Slack/Discord/Telegram 等转换型集成 |
-| 传输 | POST JSON、POST payload 表单；GET payload 查询参数单列 |
-| 作用域 | repository / organization / user / system；default Webhook 是复制给新仓库的配置 |
+| Checked | 2026-11-08 |
+| Exact baseline | **Gitea v1.25.5**; source-derived constraints apply only to this version, not mixed with latest-documentation behavior |
+| Type | Generic Gitea Webhooks, not transformed Slack/Discord/Telegram integrations |
+| Transport | POST JSON, POST payload form; separate GET payload query |
+| Scope | repository / organization / user / system; default Webhooks are configuration copied to new repositories |
 
-## 2. 配置参数
+## 2. Configuration parameters
 
-| 参数 | 值/约束 | 影响 | 来源 |
+| Parameter | Value/constraint | Effect | Source |
 |---|---|---|---|
-| Target URL | 完整接收地址 | 投递目标 | S1 |
-| HTTP Method | POST 或 GET | 选择 B1/B2/B3 | S1、S2 |
-| POST Content Type | JSON 或 URL 编码表单 | 选择 B1/B2 | S1、S2 |
-| Secret | O，文本原文 | A1；不再把 secret 放在 Payload 内 | S1、S2 |
-| Authorization Header | O，自定义完整头值 | A2；独立于 Secret | S1、S2 |
-| Trigger On / Active | 事件选择/启用状态 | 投递范围 | S1 |
-| Branch Filter | glob；仅对带 git ref 的事件生效 | 不限制所有 Issue 等无 ref 事件 | S1 |
-| DELIVER_TIMEOUT | [webhook]，秒，默认 5，可配置 | 请求总超时 | S5 |
+| Target URL | Full receiver URL | Destination | S1 |
+| HTTP Method | POST or GET | B1/B2/B3 | S1, S2 |
+| POST Content Type | JSON or URL-encoded form | B1/B2 | S1, S2 |
+| Secret | O, raw text | A1; secret no longer placed inside payload | S1, S2 |
+| Authorization Header | O, full custom header value | A2, independent of Secret | S1, S2 |
+| Trigger On / Active | Events/enabled state | Delivery scope | S1 |
+| Branch Filter | glob; only events with git refs | Does not restrict all ref-less events such as Issues | S1 |
+| DELIVER_TIMEOUT | [webhook], seconds, default 5, configurable | Total request timeout | S5 |
 
-## 3. 请求类型注册表
+## 3. Request registry
 
-| ID | HTTP/编码 | 认证 | Body/数据位置 | 响应 |
+| ID | HTTP/encoding | Authentication | Body/data location | Response |
 |---|---|---|---|---|
-| GT-JSON | POST application/json | A1/A2，按配置 | B1 | R1 |
-| GT-FORM | POST application/x-www-form-urlencoded | A1/A2，按配置 | B2 | R1 |
-| GT-GET | GET | A1/A2，按配置 | B3，HTTP Body 为空 | R1 |
-| GT-TEST | 按已配方式投递，事件为 push | 同一配置 | P1 的合成 Push | R1 |
-| GT-REPLAY | 重放已有任务 | 按本次配置签名/认证 | 原事件数据，生成新任务 UUID | R1 |
+| GT-JSON | POST application/json | A1/A2 by configuration | B1 | R1 |
+| GT-FORM | POST application/x-www-form-urlencoded | A1/A2 by configuration | B2 | R1 |
+| GT-GET | GET | A1/A2 by configuration | B3, empty HTTP body | R1 |
+| GT-TEST | Configured delivery mode, push event | Same configuration | P1 synthetic Push | R1 |
+| GT-REPLAY | Replay existing task | Current configuration's signing/authentication | Original event, new task UUID | R1 |
 
-## 4. 认证契约
+## 4. Authentication contracts
 
-### A1：HMAC
+### A1: HMAC
 
-| 编码 | 精确签名消息 M | 验证头 | 期望值 | 来源 |
+| Encoding | Exact message M | Header | Expected | Source |
 |---|---|---|---|---|
 | B1 JSON | B | X-Gitea-Signature | HEX(HMAC256(UTF8(secret), M)) | S2 |
-| B2 表单 | URL 解码得到的 payload JSON 原始文本的字节 | 同上 | 同上；**不是整个编码表单** | S2 |
-| B3 GET | 查询参数 payload 解码后的 JSON 原始文本的字节 | 同上 | 同上；**不是空 HTTP Body** | S2 |
+| B2 form | Original JSON text bytes after URL-decoding payload | Same | Same; **not entire encoded form** | S2 |
+| B3 GET | Original JSON text bytes after decoding query parameter payload | Same | Same; **not empty HTTP body** | S2 |
 
-| 签名属性 | 精确规则 | 来源 |
+| Signature property | Exact rule | Source |
 |---|---|---|
-| X-Gitea-Signature | 64 位小写十六进制，**没有前缀** | S2 |
-| X-Gogs-Signature | 相同 SHA256 摘要的兼容头 | S2 |
-| X-Hub-Signature-256 | sha256= + 同一摘要 | S2 |
-| X-Hub-Signature | sha1= + 相同 M 的 HMAC-SHA1 摘要 | S2 |
-| 无 Secret | 头仍可出现，但摘要为空；兼容头只剩 sha1=/sha256= 前缀 | S2 |
-| 时间戳 | 签名不包含时间戳 | S2 |
-| 禁止重序列化 | 表单/GET 解码后保留原 JSON 文本；不能转对象再序列化计算摘要 | S2 的消息来源 |
+| X-Gitea-Signature | 64 lowercase hex characters, **no prefix** | S2 |
+| X-Gogs-Signature | Compatibility header with same SHA256 digest | S2 |
+| X-Hub-Signature-256 | sha256= + same digest | S2 |
+| X-Hub-Signature | sha1= + HMAC-SHA1 digest of same M | S2 |
+| No Secret | Headers may still appear with empty digest; compatibility headers retain sha1=/sha256= only | S2 |
+| Timestamp | Not included in signature | S2 |
+| No reserialization | Preserve original JSON text after form/GET decoding; do not parse and reserialize before signing | S2 message source |
 
-### A2：自定义 Authorization
+### A2: custom Authorization
 
-| 项目 | 规则（S2） |
+| Item | Rule (S2) |
 |---|---|
-| 传输值 | 使用配置的完整 Authorization Header 值，不自动解释为某种 Token 类型 |
-| 与 A1 关系 | 同一请求可同时有 Authorization 和签名 |
-| 覆盖范围 | 固定头不证明 Body 完整性；是否与 A1 共同要求由接收端约定 |
+| Value | Full configured Authorization Header; no automatic token-type interpretation |
+| Relationship to A1 | Authorization and signature may coexist |
+| Coverage | Static header does not prove body integrity; receiver policy decides whether to require both |
 
-### 请求头
+### Headers
 
-| 名称 | 精确语义 | 来源 |
+| Name | Exact meaning | Source |
 |---|---|---|
-| X-Gitea-Delivery | HookTask.UUID；Replay 会产生新 UUID | S2、S7 |
-| X-Gitea-Event | Event-Type 经 Event() 归一化后的事件名 | S2、S3 |
-| X-Gitea-Event-Type | 精确 HookEventType 字符串 | S2、S3 |
-| X-Gitea-Hook-Installation-Target-Type | repository / organization / user / system 等作用域 | S2 |
-| X-GitHub-* / X-Gogs-* | 兼容元信息；不能据此认定源平台是 GitHub/Gogs | S2 |
+| X-Gitea-Delivery | HookTask.UUID; Replay creates a new UUID | S2, S7 |
+| X-Gitea-Event | Event-Type normalized through Event() | S2, S3 |
+| X-Gitea-Event-Type | Exact HookEventType string | S2, S3 |
+| X-Gitea-Hook-Installation-Target-Type | repository / organization / user / system, etc. | S2 |
+| X-GitHub-* / X-Gogs-* | Compatibility metadata; does not prove source is GitHub/Gogs | S2 |
 
-## 5. 请求体契约
+## 5. Body contracts
 
-### B1/B2/B3 编码
+### B1/B2/B3 encodings
 
-| ID | HTTP 数据 | 解码步骤 | 来源 |
+| ID | HTTP data | Decoding | Source |
 |---|---|---|---|
-| B1 | 原始 JSON 事件 | 按 B 验签 → JSON 解析 | S2 |
-| B2 | payload=<URL 编码 JSON> | 表单解码保留 payload 文本 → 以该文本验签 → JSON 解析 | S2 |
-| B3 | ?payload=<URL 编码 JSON> | 查询参数解码保留 payload 文本 → 以该文本验签 → JSON 解析 | S2 |
+| B1 | Raw event JSON | Verify B → parse JSON | S2 |
+| B2 | `payload=<URL-encoded JSON>` | Decode form, preserve payload text → verify text → parse JSON | S2 |
+| B3 | `?payload=<URL-encoded JSON>` | Decode query, preserve payload text → verify text → parse JSON | S2 |
 
-### 事件头精确映射
+### Exact event header mappings
 
-下表依据 **v1.25.5 的 S3**，不可将精确 Event-Type 直接复制成 Event。
+Based on **v1.25.5 S3**. Do not copy exact Event-Type directly into Event.
 
-| X-Gitea-Event-Type | X-Gitea-Event | Payload 类型（S4） |
+| X-Gitea-Event-Type | X-Gitea-Event | Payload type (S4) |
 |---|---|---|
-| create / delete / fork / push | 与 Event-Type 同名 | CreatePayload / DeletePayload / ForkPayload / PushPayload |
+| create / delete / fork / push | Same as Event-Type | CreatePayload / DeletePayload / ForkPayload / PushPayload |
 | issues | issues | IssuePayload |
 | issue_assign | issues | IssuePayload |
 | issue_label | issues | IssuePayload |
@@ -106,87 +106,87 @@ description: 依据 Gitea v1.25.5 官方实现，精确查阅 JSON、表单和 G
 | pull_request_milestone | pull_request | PullRequestPayload |
 | pull_request_sync | pull_request | PullRequestPayload |
 | pull_request_review_request | pull_request | PullRequestPayload |
-| pull_request_comment | **issue_comment** | IssueCommentPayload，时间线评论 |
+| pull_request_comment | **issue_comment** | IssueCommentPayload, timeline comment |
 | pull_request_review_approved | **pull_request_approved** | PullRequestPayload + review |
 | pull_request_review_rejected | **pull_request_rejected** | PullRequestPayload + review |
-| pull_request_review_comment | **pull_request_comment** | PullRequestPayload + review，区别于时间线评论 |
-| wiki / repository / release / package / status | 与 Event-Type 同名 | 对应 Payload |
-| workflow_run / workflow_job | 与 Event-Type 同名 | WorkflowRunPayload / WorkflowJobPayload |
-| pull_request_review | 订阅集合名 | S3 明确为 review_xxx 分组，不据此建立独立通用审核 Payload |
-| schedule | S3 标为 Actions 内部事件 | 不作为本表通用外部 Webhook 类型 |
+| pull_request_review_comment | **pull_request_comment** | PullRequestPayload + review, distinct from timeline comments |
+| wiki / repository / release / package / status | Same as Event-Type | Corresponding payload |
+| workflow_run / workflow_job | Same as Event-Type | WorkflowRunPayload / WorkflowJobPayload |
+| pull_request_review | Subscription group name | S3 groups review_xxx; not an independent generic review payload |
+| schedule | S3 identifies as internal Actions event | Not a generic external Webhook type here |
 
-### Payload 字段表
+### Payload fields
 
-S4 为官方类型定义：不带 omitempty 的字段会序列化；指针可为 null，不能把存在与非 null 混淆。下表列顶层字段；资源内部结构依同版本 S4 引用的类型。
+S4 defines official types. Fields without omitempty serialize; pointers may be null. Presence is not non-nullability. Top-level fields below reference resource types from the same S4 version.
 
-| Payload | 顶层字段/类型 | 条件 |
+| Payload | Top-level fields/types | Conditions |
 |---|---|---|
-| Create | sha/ref/ref_type:string；repository/sender:object或null | 无统一 action |
-| Delete | ref/ref_type/pusher_type:string；repository/sender:object或null | pusher_type 定义为 user |
-| Fork | forkee/repository/sender:object或null | forkee 为新 Fork |
-| Push（P1） | 见下表 | 无统一 action |
-| Issue | action:string、number:integer、issue/repository/sender:object或null、commit_id:string | changes 可省略 |
-| IssueComment | action:string、issue/comment/repository/sender:object或null、is_pull:boolean | pull_request、changes 可省略 |
-| PullRequest | action:string、number:integer、pull_request/requested_reviewer/repository/sender/review:object或null、commit_id:string | changes 可省略；review 按动作填充 |
-| Wiki | action/page/comment:string、repository/sender:object或null | action=created/edited/deleted |
-| Repository | action:string、repository/organization/sender:object或null | action=created/deleted |
-| Release | action:string、release/repository/sender:object或null | action=published/updated/deleted |
-| Package | action:string、package/repository/organization/sender:object或null | action=created/deleted；repository 可 null |
-| Status | context/description/sha/state/target_url:string、id:integer、created_at:时间、commit/repository/sender:object或null、updated_at:时间或null | 没有 action；状态由 state 表示 |
-| WorkflowRun | action:string、workflow/workflow_run/repository/sender:object或null | pull_request、organization 可省略 |
-| WorkflowJob | action:string、workflow_job/repository/sender:object或null | pull_request、organization 可省略 |
+| Create | sha/ref/ref_type:string; repository/sender:object or null | No universal action |
+| Delete | ref/ref_type/pusher_type:string; repository/sender:object or null | pusher_type defined as user |
+| Fork | forkee/repository/sender:object or null | forkee is new Fork |
+| Push (P1) | Below | No universal action |
+| Issue | action:string, number:integer, issue/repository/sender:object or null, commit_id:string | changes omittable |
+| IssueComment | action:string, issue/comment/repository/sender:object or null, is_pull:boolean | pull_request, changes omittable |
+| PullRequest | action:string, number:integer, pull_request/requested_reviewer/repository/sender/review:object or null, commit_id:string | changes omittable; review populated by action |
+| Wiki | action/page/comment:string, repository/sender:object or null | action=created/edited/deleted |
+| Repository | action:string, repository/organization/sender:object or null | action=created/deleted |
+| Release | action:string, release/repository/sender:object or null | action=published/updated/deleted |
+| Package | action:string, package/repository/organization/sender:object or null | action=created/deleted; repository nullable |
+| Status | context/description/sha/state/target_url:string, id:integer, created_at:time, commit/repository/sender:object or null, updated_at:time or null | No action; state carries status |
+| WorkflowRun | action:string, workflow/workflow_run/repository/sender:object or null | pull_request, organization omittable |
+| WorkflowJob | action:string, workflow_job/repository/sender:object or null | pull_request, organization omittable |
 
-### P1：Push
+### P1: Push
 
-| 字段 | 类型（S4） | 语义 |
+| Field | Type (S4) | Meaning |
 |---|---|---|
-| ref | string | 完整引用 |
-| before / after | string | 前后提交 ID |
-| compare_url | string | 比较链接，区别于 GitHub compare |
-| commits | object[]或null | PayloadCommit 集合；Go nil slice 可序列化为 null |
-| total_commits | integer | 提交数 |
-| head_commit | object或null | 头提交 |
-| repository / pusher / sender | object或null | 仓库、推送者、操作者 |
+| ref | string | Full ref |
+| before / after | string | Commit IDs before/after |
+| compare_url | string | Compare link, distinct from GitHub compare |
+| commits | object[] or null | PayloadCommit collection; Go nil slice may serialize as null |
+| total_commits | integer | Commit count |
+| head_commit | object or null | Head commit |
+| repository / pusher / sender | object or null | Repository, pusher, actor |
 
-| PayloadCommit 字段 | 类型（S4） |
+| PayloadCommit field | Type (S4) |
 |---|---|
 | id / message / url | string |
-| author / committer | PayloadUser对象或null；name/email/username 为 string |
-| verification | 对象或null |
-| timestamp | JSON 时间字符串 |
-| added / removed / modified | string[]或null |
+| author / committer | PayloadUser object or null; name/email/username are string |
+| verification | object or null |
+| timestamp | JSON time string |
+| added / removed / modified | string[] or null |
 
-## 6. 响应契约 R1
+## 6. Response contract R1
 
-| 项目 | v1.25.5 精确规则 | 来源 |
+| Item | Exact v1.25.5 rule | Source |
 |---|---|---|
-| 成功状态 | 最终响应码满足 status/100==2 | S2 |
-| Body | 不要求固定业务 JSON；没有 challenge 回显 | S2 |
-| 超时 | http.Client.Timeout=DELIVER_TIMEOUT 秒；默认 5 | S2、S5 |
-| 测试 | 合成 Push，与正式请求一样确认；不是 Ping/challenge | S6 |
+| Success | Final response code satisfies status/100==2 | S2 |
+| Body | No fixed business JSON or challenge echo | S2 |
+| Timeout | http.Client.Timeout=DELIVER_TIMEOUT seconds; default 5 | S2, S5 |
+| Test | Synthetic Push, ACK like live requests; not Ping/challenge | S6 |
 
-## 7. 投递语义
+## 7. Delivery semantics
 
-| 项目 | v1.25.5 精确规则 | 来源 |
+| Item | Exact v1.25.5 rule | Source |
 |---|---|---|
-| Replay | 复制原 PayloadContent/EventType/PayloadVersion 创建新任务 | S7 |
-| Replay ID | CreateHookTask 生成**新的 UUID**，X-Gitea-Delivery 因而变化 | S7、S2 |
-| 去重边界 | 仅用 Delivery 去重不能消除人工 Replay 的业务副作用 | S7 的行为；接收端策略结论 |
-| 自动重试 | S2/S8 发送器不提供 Stripe 式固定退避重试契约；不能写成固定 N 次补投 | S2、S8 |
-| Test Body | before=after，1 条合成提交、total_commits=1；仓库无可用 Commit 时创建假提交 | S6 |
-| 排序 | 不提供全局事务序列保证 | S2、S8 未定义 |
+| Replay | Copy original PayloadContent/EventType/PayloadVersion into new task | S7 |
+| Replay ID | CreateHookTask generates **new UUID**, changing X-Gitea-Delivery | S7, S2 |
+| Deduplication boundary | Delivery-only deduplication cannot prevent manual Replay business side effects | S7 behavior; receiver-policy conclusion |
+| Automatic retries | S2/S8 sender provides no Stripe-style fixed backoff contract; do not claim fixed N retries | S2, S8 |
+| Test body | before=after, one synthetic commit, total_commits=1; fake commit if repository lacks usable commit | S6 |
+| Ordering | No global transactional sequence guarantee | Undefined in S2, S8 |
 
-## 8. 官方来源
+## 8. Official sources
 
-除 S1 外均固定 **v1.25.5**；类型代码仅作为协议证据，不复制引入第三方代码。
+All except S1 are pinned to **v1.25.5**. Type code is evidence only; third-party code is not copied into this project.
 
-| 编号 | 来源 | 约束范围 |
+| ID | Source | Scope |
 |---|---|---|
-| S1 | [Webhooks 文档](https://docs.gitea.com/usage/repository/webhooks/) | 配置概念；当前文档不替代下列固定版本 |
-| S2 | [services/webhook/deliver.go](https://github.com/go-gitea/gitea/blob/v1.25.5/services/webhook/deliver.go) | 编码、签名、头、成功状态 |
-| S3 | [modules/webhook/type.go](https://github.com/go-gitea/gitea/blob/v1.25.5/modules/webhook/type.go) | 精确 Event-Type → Event 映射 |
-| S4 | [modules/structs/hook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/modules/structs/hook.go) | 类型、序列化、null/省略 |
-| S5 | [modules/setting/webhook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/modules/setting/webhook.go) | 5 秒默认配置 |
+| S1 | [Webhooks documentation](https://docs.gitea.com/usage/repository/webhooks/) | Configuration concepts; current docs do not replace pinned version sources |
+| S2 | [services/webhook/deliver.go](https://github.com/go-gitea/gitea/blob/v1.25.5/services/webhook/deliver.go) | Encoding, signatures, headers, success |
+| S3 | [modules/webhook/type.go](https://github.com/go-gitea/gitea/blob/v1.25.5/modules/webhook/type.go) | Exact Event-Type → Event mapping |
+| S4 | [modules/structs/hook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/modules/structs/hook.go) | Types, serialization, null/omission |
+| S5 | [modules/setting/webhook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/modules/setting/webhook.go) | Default 5-second configuration |
 | S6 | [routers/web/repo/setting/webhook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/routers/web/repo/setting/webhook.go) | TestWebhook |
-| S7 | [models/webhook/hooktask.go](https://github.com/go-gitea/gitea/blob/v1.25.5/models/webhook/hooktask.go) | Replay 新建任务及 UUID |
-| S8 | [services/webhook/webhook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/services/webhook/webhook.go) | 发送队列与任务行为 |
+| S7 | [models/webhook/hooktask.go](https://github.com/go-gitea/gitea/blob/v1.25.5/models/webhook/hooktask.go) | Replay new tasks/UUIDs |
+| S8 | [services/webhook/webhook.go](https://github.com/go-gitea/gitea/blob/v1.25.5/services/webhook/webhook.go) | Queue/task behavior |

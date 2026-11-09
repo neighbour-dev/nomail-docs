@@ -2,6 +2,9 @@
 /index.html / 301
 /guide /guide/ 301
 /reference /reference/ 301
+/zh /zh/ 301
+/zh/guide /zh/guide/ 301
+/zh/reference /zh/reference/ 301
 /*/index.html /:splat/ 301
 /*/index /:splat/ 301
 /*.html /:splat 301

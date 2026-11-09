@@ -1,23 +1,23 @@
 ---
-title: 认识 NoMail - App 与自托管通知收件箱
-description: 了解 NoMail App、自托管服务端和来源平台各自的职责，以及通知从平台事件进入个人收件箱的流程，区分在线更新与手机系统推送。
+title: About NoMail - App and self-hosted notification inbox
+description: Understand the NoMail App, self-hostable backend, and source platforms, how events reach your inbox, and how online updates differ from mobile system push notifications.
 ---
 
-# 认识 NoMail 通知收件箱
+# About the NoMail notification inbox
 
-NoMail 是一个通知收件箱，将不同平台的事件和通知汇集起来，方便你在 NoMail App 中集中查看和管理。
+NoMail collects events and notifications from different platforms so you can view and manage them together in the NoMail App.
 
-## App 与服务端
+## App and backend
 
-- **NoMail App**：用于查看和管理消息，是日常使用 NoMail 的入口。
-- **NoMail 服务端**：接收平台发送的 Webhook，验证来源并保存消息及事件上下文。你可以将它部署在自己的服务器或 Cloudflare Workers 上。
+- **NoMail App**: your everyday interface for viewing and managing messages.
+- **NoMail backend**: receives platform Webhooks, verifies their source, and stores messages and event context. Deploy it on your own server or Cloudflare Workers.
 
-通知的流向是：**来源平台 → 你的 NoMail 服务 → NoMail App**。
+Notifications flow from **source platform → your NoMail server → NoMail App**.
 
-## 从哪里开始
+## Where to start
 
-1. [部署自己的服务](install.md)，准备服务地址、账号与密钥。
-2. [连接通知来源](sources.md)，为需要关注的平台配置事件投递。
-3. 在 NoMail App 中查看和管理收到的通知。
+1. [Deploy your server](install.md) and prepare its URL, account, and keys.
+2. [Connect notification sources](sources.md) and configure event delivery for the platforms you follow.
+3. View and manage incoming notifications in the NoMail App.
 
-服务端的在线消息更新与手机系统推送不是一回事，不应将在线更新理解为 App 离线时也能收到系统通知。
+The backend's online message updates are not mobile system push notifications. Online updates do not imply that the App receives system notifications while offline.

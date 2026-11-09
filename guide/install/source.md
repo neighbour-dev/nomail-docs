@@ -1,66 +1,66 @@
 ---
-title: NoMail 源码构建与部署指南
-description: 使用 Rust 从源码构建 NoMail Server，生成凭据加密密钥、配置初始账号并启动服务，了解 SQLite 存储、服务管理、备份升级及本地账号重置。
+title: Build and deploy NoMail from source
+description: Build NoMail Server with Rust, generate encryption keys, configure an initial account, and manage SQLite storage, services, backups, upgrades, and account resets.
 ---
 
-# 从源码构建与部署 NoMail
+# Build and deploy NoMail from source
 
-需要 Rust 1.99+ 及平台编译工具，适合需要修改服务端代码或自行构建的部署。使用本地 SQLite，无需另外部署数据库服务。
+Requires Rust 1.99+ and platform build tools. Suitable for modifying the backend or building it yourself. Uses local SQLite without a separate database service.
 
-## 1. 获取源码
+## 1. Get the source
 
 ```bash
 git clone https://github.com/neighbour-dev/nomail-api.git
 cd nomail-api
 ```
 
-以下命令均在仓库根目录执行。
+Run the following commands from the repository root.
 
-## 2. 准备配置
+## 2. Prepare configuration
 
-首次安装时创建配置并生成凭据加密密钥；已有 `.env` 时不要覆盖，也不要重新生成已有部署的加密密钥：
+For a first installation, create configuration and generate the credential encryption key. Do not overwrite an existing `.env` or regenerate an existing deployment's encryption key:
 
 ```bash
 cp .env.example .env
 cargo run --locked -p nomail-server --bin gen-secret-key
 ```
 
-生成器输出完整的 `SECRET_ENCRYPTION_KEY=...` 配置行。按[通用配置说明](../install.md#准备密钥与初始账号)填写 `.env` 中的其余密钥和初始账号，`JWT_SECRET` 需独立生成。
+The generator prints a complete `SECRET_ENCRYPTION_KEY=...` line. Follow the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account) for the remaining keys and initial account. Generate `JWT_SECRET` independently.
 
-## 3. 构建与启动
+## 3. Build and start
 
 ```bash
 cargo build --locked --release -p nomail-server --bins
 ./target/release/nomail-api
 ```
 
-默认监听 `0.0.0.0:3000`，数据库为 `./data/nomail.db`，目录、数据库和表会自动创建。Server 使用 SQLite WAL 和外键约束，不需要 PostgreSQL，也不提供旧 PostgreSQL 数据迁移。
+The default listener is `0.0.0.0:3000`, with the database at `./data/nomail.db`. Directories, database, and tables are created automatically. Server uses SQLite WAL and foreign key constraints, does not require PostgreSQL, and provides no migration from legacy PostgreSQL data.
 
-在另一个终端检查：
+Check from another terminal:
 
 ```bash
 curl http://127.0.0.1:3000/api/health
 ```
 
-正常时响应的 `data.status` 和 `data.db` 均为 `ok`；修改端口后应相应调整访问地址。
+Both `data.status` and `data.db` should be `ok`. Adjust the URL if you change the port.
 
-`.env` 从进程当前目录加载；生产环境应通过服务管理器配置工作目录、环境变量及自动重启。
+`.env` is loaded from the process's working directory. In production, configure a working directory, environment variables, and automatic restart through a service manager.
 
-首次启动会初始化账号。登录并修改密码后，移除配置中的 `INITIAL_PASSWORD` 并重启服务。接下来按[部署后的通用配置](../install.md#部署后的通用配置)准备公网访问并连接通知来源。
+The initial account is created at first startup. Log in and change its password, then remove `INITIAL_PASSWORD` and restart. Follow the [common post-deployment configuration](../install.md#common-post-deployment-configuration) for public access and sources.
 
-## 备份与升级
+## Backups and upgrades
 
-1. 核对[通用备份与升级要求](../install.md#备份与升级的通用要求)，保存配置与原加密密钥。
-2. 停止服务后备份整个数据目录，或使用 SQLite 在线备份工具。WAL 模式下不能在运行时只复制主数据库文件。
-3. 获取目标版本的源码，保留现有 `.env` 和数据目录，重新执行构建命令并重启服务。
-4. 检查健康状态与日志。Server 启动时自动应用待执行的数据库迁移。
+1. Review the [common backup and upgrade requirements](../install.md#common-backup-and-upgrade-requirements). Preserve configuration and the original encryption key.
+2. Stop the service and back up the entire data directory, or use SQLite's online backup tools. In WAL mode, do not copy only the main database file while running.
+3. Get the target version's source, keep the existing `.env` and data directory, rebuild, and restart.
+4. Check health and logs. Server applies pending database migrations at startup.
 
-## 忘记密码
+## Forgotten password
 
-使用与运行服务相同的工作目录、数据库路径及配置执行：
+Use the same working directory, database path, and configuration as the running service:
 
 ```bash
-./target/release/reset-account --username admin --password '<新密码>'
+./target/release/reset-account --username admin --password '<new-password>'
 ```
 
-`--username` 可省略以保留原用户名；重置会撤销全部会话。密码经命令行参数传递，应在可信终端操作，注意命令历史和进程参数的可见性。
+Omit `--username` to retain the current username. Resetting revokes all sessions. Passwords are command-line arguments: use a trusted terminal and consider shell history and process argument visibility.

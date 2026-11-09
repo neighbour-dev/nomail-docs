@@ -1,26 +1,26 @@
 ---
-title: NoMail 使用指南 - 产品介绍、自托管部署与平台接入
-description: 从认识 NoMail 开始，选择自托管部署方式，准备服务地址、账号和加密密钥，再连接通知来源，完成平台事件到 App 收件箱的接入流程。
+title: NoMail user guide - Introduction, self-hosting, and integrations
+description: Learn about NoMail, choose a deployment method, prepare your server, account, and encryption key, then connect notification sources to your App inbox.
 ---
 
-# NoMail 使用指南
+# NoMail user guide
 
-本指南按使用任务组织：先了解 NoMail，再准备自己的服务，最后连接通知来源。
+This guide follows common tasks: understand NoMail, prepare your server, then connect notification sources.
 
-## 选择要完成的任务
+## Choose a task
 
-| 任务 | 阅读内容 |
+| Task | Read |
 |---|---|
-| 了解产品与通知流向 | [认识 NoMail](introduction.md) |
-| 部署自己的服务 | [安装与部署](install.md) |
-| 配置平台事件投递 | [连接通知来源](sources.md) |
-| 生成、保存服务端凭据加密密钥 | [安装与部署：配置加密密钥](install.md#配置加密密钥) |
+| Understand the product and notification flow | [About NoMail](introduction.md) |
+| Deploy your own server | [Installation and deployment](install.md) |
+| Configure platform event delivery | [Connect notification sources](sources.md) |
+| Generate and preserve the server credential encryption key | [Configure the encryption key](install.md#configure-the-encryption-key) |
 
-## 使用流程
+## Workflow
 
-1. 明确 App、服务端和来源平台的职责。
-2. 选择部署方式，配置账号、密钥与可访问的服务地址。
-3. 在 NoMail 与来源平台两侧设置接收配置和事件订阅。
-4. 触发平台事件或测试投递，检查通知是否送达。
+1. Understand the roles of the App, backend, and source platforms.
+2. Choose a deployment method and configure an account, keys, and a reachable server URL.
+3. Configure receivers in NoMail and event subscriptions on each source platform.
+4. Trigger an event or test delivery and check that notifications arrive.
 
-需要核对来源平台的鉴权和投递规则时，再阅读[平台协议参考](../reference/index.md)。
+Consult the [platform protocol reference](../reference/index.md) when you need precise authentication and delivery rules.

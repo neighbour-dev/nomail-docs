@@ -3,7 +3,7 @@ import type { HeadConfig } from 'vitepress'
 export const siteUrl = 'https://nomail.sg'
 export const siteName = 'NoMail'
 export const publisherName = 'NEIGHBOUR PTE. LTD.'
-export const siteDescription = 'NoMail 通知收件箱的使用、自托管部署与平台接入指南'
+export const siteDescription = 'Guides to using, self-hosting, and connecting platforms to the NoMail notification inbox'
 
 export function canonicalUrl(relativePath: string): string {
   const url = new URL(relativePath, `${siteUrl}/`)
@@ -35,13 +35,20 @@ type PageSeoInput = {
 
 export function pageSeoHead(input: PageSeoInput): HeadConfig[] {
   const url = canonicalUrl(input.relativePath)
+  const english = !input.relativePath.startsWith('zh/')
+  const language = english ? 'en' : 'zh-CN'
+  const sourcePath = input.relativePath.replace(/^zh\//, '')
   const noindex = input.noindex === true
   const head: HeadConfig[] = [
     ['link', { rel: 'canonical', href: url }],
+    ['link', { rel: 'alternate', hreflang: 'zh-CN', href: canonicalUrl(`zh/${sourcePath}`) }],
+    ['link', { rel: 'alternate', hreflang: 'en', href: canonicalUrl(sourcePath) }],
+    ['link', { rel: 'alternate', hreflang: 'x-default', href: canonicalUrl(sourcePath) }],
     ['meta', { name: 'robots', content: noindex ? 'noindex, follow' : 'index, follow' }],
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:site_name', content: siteName }],
-    ['meta', { property: 'og:locale', content: 'zh_CN' }],
+    ['meta', { property: 'og:locale', content: english ? 'en_US' : 'zh_CN' }],
+    ['meta', { property: 'og:locale:alternate', content: english ? 'zh_CN' : 'en_US' }],
     ['meta', { property: 'og:title', content: input.title }],
     ['meta', { property: 'og:description', content: input.description }],
     ['meta', { property: 'og:url', content: url }]
@@ -55,7 +62,7 @@ export function pageSeoHead(input: PageSeoInput): HeadConfig[] {
     url,
     name: input.title,
     description: input.description,
-    inLanguage: 'zh-CN',
+    inLanguage: language,
     isPartOf: { '@id': `${siteUrl}/#website` }
   }
   if (input.lastUpdated && Number.isFinite(input.lastUpdated)) {
@@ -71,7 +78,7 @@ export function pageSeoHead(input: PageSeoInput): HeadConfig[] {
         url,
         name: siteName,
         description: input.description,
-        inLanguage: 'zh-CN',
+        inLanguage: ['en', 'zh-CN'],
         publisher: { '@id': `${siteUrl}/#organization` }
       },
       {

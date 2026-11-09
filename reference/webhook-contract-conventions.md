@@ -1,79 +1,79 @@
 ---
-title: Webhook 协议字段约束、版本与算法约定 | NoMail
-description: 统一阅读平台 Webhook 协议中的必填性、可选性、条件字段、官方证据与示例标记，明确原始字节、签名编码和接收端策略的含义。
+title: Webhook field constraints, versions, and algorithm conventions | NoMail
+description: Read required, optional, conditional, documented, and example-only fields consistently, with precise definitions for raw bytes, signature encodings, evidence, and receiver policies.
 ---
 
-# Webhook 协议阅读约定
+# How to read the Webhook contracts
 
-## 文档边界
+## Documentation boundaries
 
-| 项目 | 约定 |
+| Item | Convention |
 |---|---|
-| 用途 | 后端解析、验签、响应实现；App 平台配置表单与事件数据展示 |
-| 描述对象 | 上游平台协议；与本项目当前实现、支持范围和开发进度无关 |
-| 入站方向 | 平台 → Webhook 接收端 |
-| 出站方向 | 接收端 → 平台 API；只有协议要求业务应答或补查时单独列出 |
-| 覆盖层次 | 配置、HTTP 编码、认证、信封、事件变体、响应、投递语义 |
-| 非目标 | 将所有平台事件资源复制成一份新的、与官方脱离的完整 API Schema |
+| Purpose | Backend parsing, signature verification, and responses; App platform configuration forms and event displays |
+| Subject | Upstream protocols, independent of this project's implementation, supported platforms, or development status |
+| Inbound | Platform → Webhook receiver |
+| Outbound | Receiver → platform API; listed separately only for required business responses or follow-up queries |
+| Coverage | Configuration, HTTP encoding, authentication, envelopes, event variants, responses, delivery semantics |
+| Non-goal | Duplicating all platform resources into a new, independently maintained full API schema |
 
-## 约束标记
+## Constraint markers
 
-| 标记 | 精确定义 | 是否可直接形成必填校验 |
+| Marker | Exact meaning | Direct required-field validation? |
 |---|---|---|
-| R | 官方明确声明 Required，或明确描述每次请求都具有该字段 | 是，仅限该字段对应的请求类型/版本 |
-| O | 官方明确声明 Optional | 否 |
-| C | 有明确条件；条件成立时适用，条件写在同一行 | 按该条件处理 |
-| D | 官方描述字段，但未明确给出统一必填性 | 否；不得从示例补推为 R |
-| E | 仅由官方示例确认的结构或取值 | 否；不是完整的校验 Schema |
-| — | 该请求类型不适用 | 否 |
+| R | Officially Required, or explicitly present in every request | Yes, only for the associated request type/version |
+| O | Officially Optional | No |
+| C | Applicable under an explicit condition stated in the same row | Follow that condition |
+| D | Officially described, without a uniform requiredness statement | No; examples cannot promote it to R |
+| E | Structure or value confirmed only by an official example | No; not a complete validation schema |
+| — | Not applicable to this request type | No |
 
-`nullable` 与可省略是不同概念：`R, nullable` 表示字段必须存在但值允许为 null；不能据此允许省略。没有依据时不将“官方示例未出现”写成“协议禁止出现”。
+`nullable` differs from omittable: `R, nullable` requires the field to exist but permits null. A field missing from an example is not, without evidence, forbidden by the protocol.
 
-## 来源与版本
+## Sources and versions
 
-| 项目 | 规则 |
+| Item | Rule |
 |---|---|
-| 官方来源编号 | 每个平台使用本页内的 S1、S2 等编号；约束表引用对应编号 |
-| 官方文档 | 用于平台规定、字段语义、响应时限和投递行为 |
-| 官方实现 | 用于文档未展开的实际编码/算法；标明版本，不能扩展为所有版本的承诺 |
-| 示例 | 只用于展示编码和结构；标为“节选”时，省略字段不表示真实请求可以省略 |
-| 未规定 | 所列来源没有规定该约束；不是“允许任意值”，也不是已验证平台不存在该限制 |
-| 完整性 | 表中区分完整信封、枚举范围和资源投影；资源投影不构成完整资源 Schema |
-| 版本选择 | 业务 Payload 的版本、事件名称后缀、SDK 版本和 HTTP 认证版本分别记录 |
+| Source IDs | S1, S2, etc. are local to each platform page and cited in its tables |
+| Official documentation | Evidence for requirements, field semantics, response deadlines, and delivery behavior |
+| Official implementation | Evidence for encoding or algorithms not detailed in documentation; pinned to a version, not a promise for all versions |
+| Examples | Illustrate encoding and structure; omitted fields in excerpts are not necessarily omittable in real requests |
+| Unspecified | Listed sources do not specify the constraint; this neither permits arbitrary values nor proves the platform has no limit |
+| Completeness | Complete envelopes, enum scopes, and resource projections are distinguished; projections are not full resource schemas |
+| Version selection | Business payload versions, event-name suffixes, SDK versions, and HTTP authentication versions are recorded separately |
 
-## 算法符号
+## Algorithm notation
 
-| 符号 | 定义 |
+| Symbol | Definition |
 |---|---|
-| `B` | 接收的 HTTP 实体 Body 字节，未经 JSON 解析/重序列化或表单解码 |
-| `UTF8(s)` | 将文本 s 编码成 UTF-8 字节 |
-| `||` | 字节拼接；不会自行插入分隔符 |
-| `HEX(x)` | 字节序列的小写十六进制编码 |
-| `B64(x)` / `B64DEC(s)` | 标准 Base64 编码 / 解码，不是 Base64URL |
-| `HMAC256(K, M)` | 以字节 K 为密钥，对字节 M 计算 HMAC-SHA256 |
-| `SHA256(M)` / `SHA1(M)` | 普通摘要，不是 HMAC |
-| `CT_EQ(a, b)` | 常量时间比较 |
-| `t` | 签名头中的原始时间戳文本；参与签名时不先转换或重新格式化 |
+| `B` | Received HTTP entity body bytes, before JSON parsing/reserialization or form decoding |
+| `UTF8(s)` | Text s encoded as UTF-8 bytes |
+| `\|\|` | Byte concatenation, without implicit separators |
+| `HEX(x)` | Lowercase hexadecimal encoding of bytes |
+| `B64(x)` / `B64DEC(s)` | Standard Base64 encoding / decoding, not Base64URL |
+| `HMAC256(K, M)` | HMAC-SHA256 of bytes M using key bytes K |
+| `SHA256(M)` / `SHA1(M)` | Plain digests, not HMAC |
+| `CT_EQ(a, b)` | Constant-time comparison |
+| `t` | Original timestamp text from the signature header; do not convert or reformat before signing |
 
-## 实现边界
+## Implementation boundaries
 
-| 层次 | 规则性质 | 约束 |
+| Layer | Nature | Constraint |
 |---|---|---|
-| 验签 | 安全实现要求 | 读取原始字节；按平台指定范围签名；签名和 Token 使用常量时间比较 |
-| 类型分流 | 协议规则 | Content-Type、外层类型、事件类型和 action 分层解析 |
-| 认证策略 | 接收端策略 | 端点预先确定认证模式；不能依据缺失签名自动降级 |
-| 去重 | 接收端策略 | 按平台提供的标识及作用域确定键；HTTP 投递 ID 不一概等同于业务事件 ID |
-| 确认 | 接收端策略 | 返回成功前完成约定的可靠接收；平台 ACK 不等同于业务执行成功 |
-| 未知字段 | 兼容策略 | 是否忽略由接收端决定；不将本文未列出的字段视为上游非法字段 |
-| 敏感信息 | 安全实现要求 | 密钥、Token、临时回复地址、完整个人数据不进入公开日志或测试夹具 |
+| Signature verification | Security requirement | Preserve raw bytes, sign the specified scope, compare signatures and tokens in constant time |
+| Type dispatch | Protocol rule | Parse Content-Type, outer type, event type, and action as separate layers |
+| Authentication policy | Receiver policy | Fix authentication mode per endpoint; never downgrade based on a missing signature |
+| Deduplication | Receiver policy | Use platform IDs with their scope; HTTP delivery IDs are not universally business event IDs |
+| Acknowledgement | Receiver policy | Complete agreed reliable receipt before success; ACK does not mean business execution succeeded |
+| Unknown fields | Compatibility policy | Receivers decide whether to ignore them; unlisted fields are not automatically invalid upstream fields |
+| Sensitive data | Security requirement | Do not expose keys, tokens, temporary response URLs, or full personal data in public logs or fixtures |
 
-## 页面结构
+## Page structure
 
-1. 协议范围与版本。
-2. 配置参数。
-3. 请求类型注册表：标识、认证、Body、响应分别引用后续契约。
-4. 认证契约：输入字节、密钥解释、算法、签名格式、时效。
-5. 请求体契约：字段类型、出现条件、事件变体及官方结构入口。
-6. 响应契约：状态码、响应头、Body、时限、后续业务应答。
-7. 投递语义：去重、重试、排序、测试与正式投递区别。
-8. 官方来源。
+1. Protocol scope and versions.
+2. Configuration parameters.
+3. Request registry, referencing authentication, body, and response contracts.
+4. Authentication: input bytes, key interpretation, algorithm, signature format, freshness.
+5. Bodies: types, presence conditions, event variants, official schemas.
+6. Responses: status, headers, body, deadlines, follow-up business responses.
+7. Delivery: deduplication, retries, ordering, tests versus live events.
+8. Official sources.

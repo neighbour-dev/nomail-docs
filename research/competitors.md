@@ -1,46 +1,46 @@
 ---
-title: NoMail 与通知收件箱、自托管推送工具的竞品对比
-description: 对照 ntfy、Gotify、Bark、Pushover 等通知产品的主要能力与公开数据，记录 NoMail 产品方向的潜在差异点、统计口径和待验证假设。
+title: NoMail compared with notification inboxes and self-hosted push tools
+description: Compare public capabilities and user metrics for ntfy, Gotify, Bark, Pushover, and other notification products, recording potential NoMail differentiators and hypotheses to validate.
 ---
 
-# 通知收件箱与自托管推送工具竞品对比
+# Notification inbox and self-hosted push tool comparison
 
-核对日期：2026-10-31。
+Checked: 2026-10-31.
 
-对照的完整产品定位是：**App 通知收件箱 + 可自托管后端 + 付费手机推送服务**。这不是仅对当前 API 仓库的比较，也不代表所有潜在差异能力已经实现。
+The full product positioning compared here is **App notification inbox + self-hostable backend + paid mobile push service**. This is not merely a comparison of the current API repository and does not imply that all potential differentiators are implemented.
 
-## 数据口径
+## Data methodology
 
-- 功能依据官方文档和产品页面整理，未逐个进行完整实测。
-- 多数产品未公开可核验的活跃用户数或付费用户数。下表明确区分历史累计用户、应用商店下载量和未知数据。
-- 下载量不等于独立用户数，更不等于 MAU 或付费用户数；历史累计数据不能代表当前规模，也不能直接推算收入。
-- “潜在差异点”是需要通过产品和用户验证的方向，不表示竞品完全没有相似能力。
+- Features are compiled from official documentation and product pages, not comprehensive hands-on testing of every product.
+- Most products do not publish verifiable active or paying user counts. The table distinguishes historical cumulative users, app store downloads, and unknown metrics.
+- Downloads are not unique users, MAU, or paying users. Historical cumulative figures do not represent current scale or directly imply revenue.
+- Potential differentiators require product/user validation; they do not mean competitors have no similar capabilities.
 
-## 对比表
+## Comparison
 
-| 主要竞品 | 主要功能 | 公开用户规模 | NoMail 的潜在差异点 |
+| Competitor | Main capabilities | Public scale | Potential NoMail differentiators |
 |---|---|---|---|
-| **[ntfy](https://ntfy.sh/)** | HTTP 发布订阅；Web、Android、iOS；自托管及官方托管；优先级、附件、操作按钮、定时通知、Webhook 模板 | 活跃用户未公开；[Google Play 累计下载 10万+](https://play.google.com/store/apps/details?id=io.heckel.ntfy)，不含其他渠道，也不是用户总数 | **更深入的平台事件体验**：GitHub/飞书开箱接入、结构化卡片、后续处理。ntfy 已有 GitHub 模板，单纯“Webhook 转可读文字”不是独有差异 |
-| **[Gotify](https://gotify.net/)** | 自托管消息服务器；REST 发送、WebSocket 接收；Web UI、官方 Android 客户端；应用、用户和插件管理 | 活跃用户未公开；[Google Play 累计下载 5万+](https://play.google.com/store/apps/details?id=com.github.gotify)，不含 F-Droid 等渠道 | **原生理解来源平台 + 省运维部署**：减少用户编写适配代码的工作，提供官方维护的 Workers 部署及推送服务 |
-| **[Bark](https://github.com/Finb/Bark)** | iOS 推送；自托管服务端；加密推送、分组、自定义声音、时效性及重要通知 | 未找到可核验的总用户数或 MAU | **以事件处理为中心，而不只是手机弹窗**：服务端保存上下文、统一处理状态、筛选搜索。仅“支持推送”很难与免费 Bark 区分 |
-| **[Pushover](https://pushover.net/)** | iOS、Android、桌面通知；优先级、紧急通知及确认机制；个人买断和团队方案 | 官方在 [2022年3月披露累计超过75万用户](https://blog.pushover.net/posts/2022/3/ten)；不是当前活跃或付费用户数 | **自托管、数据控制、平台事件卡片和现代 App 体验**。付费推送需要解释清楚：为什么用户不选择它成熟的买断方案 |
-| **[Pocket Alert](https://pocketalert.app/)** | API/Webhook；手机与 Web 历史同步；来源分组、优先级、搜索；Webhook 请求记录与排查 | 未找到可核验的总用户数或 MAU | **自托管选择 + 原生平台接入深度**。它已具备完整收件箱，不能把“历史记录、搜索、分组”单独当作优势 |
-| **[HookNotifier](https://hooknotifier.com/)** | 原始 Webhook 模板；已读状态、全文搜索、标签、静默时间；手机推送和 Web 收件箱；消息更新及转发 | 未找到可核验的总用户数或 MAU | **可自托管、理解平台语义的收件箱**：减少模板配置，保留平台结构，把接入验证、错误排查和阅读体验一起做好。产品形态非常接近，值得重点体验 |
-| **[Server酱系列](https://sct.ftqq.com/)** | Turbo 偏微信及多通道推送；[Server酱³](https://sc3.ft07.com/doc) 偏自有客户端、Tag 分组、AI 摘要和翻译等体验 | 官网历史说明称超过20万用户，但时间和统计口径不明确，不能当作 Server酱³ 当前用户数 | **平台事件接入、可控的数据保存和完整处理流程**。中文体验本身不是独有优势，需要在开发者场景中做到更省心 |
+| **[ntfy](https://ntfy.sh/)** | HTTP pub/sub; Web, Android, iOS; self-hosted/official hosting; priorities, attachments, actions, scheduled messages, Webhook templates | Active users unpublished; [100K+ cumulative Google Play downloads](https://play.google.com/store/apps/details?id=io.heckel.ntfy), excluding other channels, not total users | **Deeper platform event experience**: ready-made GitHub/Feishu integrations, structured cards, follow-up handling. ntfy already has GitHub templates; converting Webhooks into readable text alone is not unique |
+| **[Gotify](https://gotify.net/)** | Self-hosted message server; REST publishing, WebSocket receiving; Web UI, official Android client; apps, users, plugins | Active users unpublished; [50K+ cumulative Google Play downloads](https://play.google.com/store/apps/details?id=com.github.gotify), excluding F-Droid and other channels | **Native platform understanding + simpler operations**: reduce custom adapters; officially maintained Workers deployment and push service |
+| **[Bark](https://github.com/Finb/Bark)** | iOS push; self-hosted backend; encrypted push, grouping, custom sounds, time-sensitive and critical notifications | No verifiable total users or MAU found | **Event handling, not just phone alerts**: stored context, unified processing state, filtering/search. Push support alone struggles to differentiate from free Bark |
+| **[Pushover](https://pushover.net/)** | iOS, Android, desktop notifications; priorities, emergency alerts/ACKs; personal one-time purchase and teams | Officially reported [over 750K cumulative users in March 2022](https://blog.pushover.net/posts/2022/3/ten), not current active/paying users | **Self-hosting, data control, platform event cards, modern App experience**. Paid push must explain why users would not choose its mature one-time purchase |
+| **[Pocket Alert](https://pocketalert.app/)** | API/Webhook; mobile/Web history sync; source groups, priorities, search; Webhook logs/troubleshooting | No verifiable total users or MAU found | **Self-hosting choice + deep native integrations**. Already a complete inbox; history/search/grouping alone are not advantages |
+| **[HookNotifier](https://hooknotifier.com/)** | Raw Webhook templates; read state, full-text search, tags, quiet hours; mobile push/Web inbox; updates/forwarding | No verifiable total users or MAU found | **Self-hostable, platform-aware inbox**: fewer templates, preserved structure, integrated verification, diagnostics, and reading experience. Very similar product shape; prioritize hands-on study |
+| **[ServerChan family](https://sct.ftqq.com/)** | Turbo focuses on WeChat/multichannel push; [ServerChan³](https://sc3.ft07.com/doc) on its own client, tags, AI summaries/translation | Historical site claims over 200K users, with unclear date/methodology; not current ServerChan³ users | **Platform events, controlled retention, complete handling workflow**. Chinese UX alone is not unique; make developer workflows easier |
 
-## 优先对标对象
+## Priority benchmarks
 
-- **ntfy**：免费、自托管和功能完整度的基准。其[消息模板](https://ntfy.sh/docs/publish/#message-templating)已经覆盖 GitHub、Grafana、Alertmanager 等来源，不应低估其接入能力。
-- **Pushover**：付费通知服务的基准。其[个人买断与团队收费方式](https://pushover.net/pricing)值得研究；官网展示的视觉风格可以作为体验研究线索，但截图不一定代表当前 App，不能据此判断其维护状态或产品质量。
-- **Pocket Alert、HookNotifier**：完整产品形态和未来 SaaS 体验上的直接参照。
+- **ntfy**: baseline for free/self-hosted feature completeness. Its [message templates](https://ntfy.sh/docs/publish/#message-templating) already cover GitHub, Grafana, and Alertmanager; do not underestimate integrations.
+- **Pushover**: baseline for paid notifications. Study [personal one-time and team pricing](https://pushover.net/pricing). Website visuals can guide UX research, but screenshots may not reflect the current App and cannot establish maintenance status or quality.
+- **Pocket Alert, HookNotifier**: direct references for the full product shape and future SaaS experience.
 
-Novu、Knock 更偏向帮助开发者给其应用用户发送通知的基础设施，Apprise 更偏通知出口适配，本表不将它们列为最直接的竞品。
+Novu and Knock focus more on infrastructure for developers sending notifications to their application's users. Apprise focuses on notification output adapters. They are not the most direct competitors in this table.
 
-## 值得验证的差异组合
+## Differentiator combinations worth validating
 
-1. **接入省心**：配置、验签、平台验证、测试投递和错误提示形成完整流程，而不只是提供一个 API。
-2. **看得懂、处理得快**：直接展示仓库、分支、PR、Workflow、发送者等上下文，并提供正确的原事件入口，而不要求用户自行拼模板。
-3. **自托管数据 + 省心的官方推送**：用户掌握收件箱数据，需要时购买持续维护的手机推送服务，并清楚知道官方网关接触哪些数据。
-4. **现代化但不牺牲效率的 App**：信息易扫读、状态明确、筛选顺手、跨端一致。视觉是尝试产品的理由，可靠性和日常效率才是长期留下的理由。
+1. **Easy integration**: configuration, verification, platform challenges, tests, and errors form a complete workflow, not just an API.
+2. **Understand quickly, act efficiently**: show repository, branch, PR, workflow, sender, and correct original-event links without requiring user-written templates.
+3. **Self-hosted data + convenient official push**: users control inbox data and optionally purchase maintained mobile push, with transparency about data seen by the official gateway.
+4. **Modern App without sacrificing efficiency**: scannable information, clear state, convenient filters, cross-client consistency. Visuals encourage trials; reliability and everyday efficiency sustain retention.
 
-这些方向不是任何单项功能的独占壁垒。真正需要验证的是：NoMail 能否把“平台接入 → 事件阅读 → 打扰控制 → 后续处理”做得明显更顺手，以及用户是否愿意为持续服务付费。
+No individual feature here is an exclusive moat. Validate whether NoMail makes **integration → reading → interruption control → follow-up handling** meaningfully smoother, and whether users will pay for an ongoing service.
