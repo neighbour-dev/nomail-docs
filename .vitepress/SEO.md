@@ -14,6 +14,9 @@
 | Canonical | 使用 `https://nomail.sg` 和简洁路径；目录索引保留尾部斜杠 |
 | 暂不索引的页面 | 保留可抓取状态，使用 noindex，不在 robots.txt 中 Disallow |
 | README | 仅用于仓库介绍，排除公开站点构建 |
+| 多语言 | 默认英文使用根路径，中文使用 `/zh/`；每页自引用 Canonical，并为对应页面输出 zh-CN、en 和指向英文的 x-default hreflang |
+
+中英文页面保持相同的目录结构。Open Graph locale 和 WebPage.inLanguage 根据页面路径生成，WebSite 声明中英文两种语言。新增页面必须同时提供对应译文，避免语言切换或 hreflang 指向不存在的页面。
 
 `.vitepress/seo.mts` 统一生成 Canonical、Open Graph 文本元信息和 JSON-LD。元信息写入 frontmatter.head，因此静态 HTML 与客户端跳转一致。首页仅声明站点与已知出版主体，文档使用 WebPage，不编造应用评分、商店链接、作者或发布日期。不提供分享封面、Twitter 卡片、Apple 主屏幕图标或面包屑（包括结构化数据）。
 
