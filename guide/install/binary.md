@@ -9,7 +9,7 @@ For Linux environments without Docker or Rust. Requires amd64 or arm64 and glibc
 
 ## 1. Download and extract
 
-Download `nomail-api-<version>-linux-amd64.tar.gz` or `nomail-api-<version>-linux-arm64.tar.gz` and `SHA256SUMS` from [GitHub Releases](https://github.com/neighbour-dev/nomail-api/releases) into the same directory. Cloning the source repository is unnecessary.
+Download `nomail-api-<version>-linux-amd64.tar.gz` or `nomail-api-<version>-linux-arm64.tar.gz` and `SHA256SUMS` from the [latest stable release](https://github.com/neighbour-dev/nomail-api/releases/latest) into the same directory. Cloning the source repository is unnecessary.
 
 For amd64, replace `vX.Y.Z` with the downloaded version:
 
@@ -30,7 +30,7 @@ Create configuration only for a first installation; do not overwrite an existing
 cp .env.example .env
 ```
 
-Fill in keys and the initial account following the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account). You can also generate the credential encryption key with:
+Fill in keys and initial account credentials following the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account). You can also generate the credential encryption key with:
 
 ```bash
 ./gen-secret-key
@@ -58,11 +58,11 @@ Both `data.status` and `data.db` should be `ok`. Adjust the URL if you change th
 
 `.env` is loaded from the process's working directory. In production, configure a working directory, environment variables, and automatic restart through a service manager.
 
-The initial account is created at first startup. Log in and change its password, then remove `INITIAL_PASSWORD` and restart. Follow the [common post-deployment configuration](../install.md#common-post-deployment-configuration) for public access and sources.
+After logging in and changing the initial password, remove `INITIAL_PASSWORD` and restart. Follow the [common post-deployment configuration](../install.md#common-post-deployment-configuration) for public access and sources.
 
 ## Backups and upgrades
 
-1. Review the [common backup and upgrade requirements](../install.md#common-backup-and-upgrade-requirements). Securely preserve `.env` and the original encryption key.
+1. Complete the prerequisites in [Upgrading](../upgrade.md) before replacing the programs. Securely preserve `.env` and the original encryption key.
 2. Stop the service and back up the entire data directory, or use SQLite's online backup tools. In WAL mode, do not copy only the main database file while running.
 3. Download and verify the target version. Replace program files but preserve configuration and data; do not overwrite `.env` with an example file.
 4. Restart through your service manager and check health and logs. Pending database migrations run at startup.

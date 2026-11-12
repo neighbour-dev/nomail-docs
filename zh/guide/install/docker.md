@@ -9,12 +9,15 @@ description: 使用 Docker Compose 和官方 GHCR 镜像部署 NoMail，配置�
 
 ## 1. 获取部署文件
 
+查看[最新正式发布版](https://github.com/neighbour-dev/nomail-api/releases/latest)的标签，将下面的 `vX.Y.Z` 替换为该标签：
+
 ```bash
-git clone https://github.com/neighbour-dev/nomail-api.git
+RELEASE_TAG=vX.Y.Z
+git clone --branch "$RELEASE_TAG" --depth 1 https://github.com/neighbour-dev/nomail-api.git
 cd nomail-api
 ```
 
-以下命令均从仓库根目录执行。`compose.yml` 默认使用：
+以下命令均从仓库根目录执行。`compose.yml` 默认使用最新正式版镜像：
 
 ```yaml
 image: ghcr.io/neighbour-dev/nomail-api:latest
@@ -22,7 +25,7 @@ image: ghcr.io/neighbour-dev/nomail-api:latest
 
 ## 2. 准备配置
 
-先按[通用配置说明](../install.md#准备密钥与初始账号)准备独立的密钥、初始用户名和密码。
+先按[通用配置说明](../install.md#准备密钥与初始账号)准备独立的密钥与初始账号凭据。
 
 首次安装时创建配置文件；已有 `.env` 时不要覆盖：
 
@@ -30,7 +33,7 @@ image: ghcr.io/neighbour-dev/nomail-api:latest
 cp .env.example .env
 ```
 
-编辑 `.env`，填写密钥与初始账号，并保留或调整：
+编辑 `.env`，填写密钥与初始账号凭据，并保留或调整：
 
 ```dotenv
 JWT_ISSUER=nomail-api
@@ -51,7 +54,7 @@ curl http://127.0.0.1:3000/api/health
 
 Compose 将数据库放在 `nomail-data` 卷的 `/data/nomail.db`，覆盖 `.env` 中的 `DATABASE_PATH`；容器根文件系统只读，数据库及 WAL/SHM 文件写入数据卷。不要使用 `docker compose down -v`，除非明确要删除全部数据。
 
-首次启动会初始化账号。登录并修改密码后，从 `.env` 移除 `INITIAL_PASSWORD`，重新执行 `docker compose up -d`。之后修改 `.env` 也需重新执行该命令以应用环境变量变化。
+登录并修改初始密码后，从 `.env` 移除 `INITIAL_PASSWORD`，再执行 `docker compose up -d`。之后修改 `.env` 也需执行该命令以应用环境变量变化。
 
 接下来按[部署后的通用配置](../install.md#部署后的通用配置)准备公网访问并连接通知来源。
 
@@ -79,7 +82,7 @@ docker compose up -d --pull never
 
 发布镜像支持 `linux/amd64` 和 `linux/arm64`，Docker 会自动选择当前机器对应的架构。`latest` 跟随稳定版发布更新，不包含预发布版本。生产部署建议改用明确的稳定版本标签（如 `vX.Y.Z`）。
 
-1. 核对[通用备份与升级要求](../install.md#备份与升级的通用要求)，保存配置及原加密密钥。
+1. 替换镜像前，先完成[版本升级](../upgrade.md)中的前置步骤，保存配置及原加密密钥。
 2. 停止服务后备份整个数据卷，或使用 SQLite 在线备份工具。WAL 模式下不能在运行时只复制主数据库文件。
 3. 在 `compose.yml` 中设置目标镜像版本，再执行 `docker compose pull` 和 `docker compose up -d`；本地镜像则重新构建，并使用 `--pull never` 启动。
 

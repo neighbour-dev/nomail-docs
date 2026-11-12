@@ -5,7 +5,7 @@ description: Choose Docker Compose, release binaries, source builds, or Cloudfla
 
 # Install and deploy the NoMail server
 
-NoMail consists of an App and a self-hostable backend. The backend receives and stores notifications from different platforms; the App lets you view and manage them. Once deployed, connect the NoMail App to your own server.
+This page covers deployment choices and shared server configuration for the [latest stable release](https://github.com/neighbour-dev/nomail-api/releases/latest), not the unreleased `main` branch. See [About NoMail](introduction.md) for product roles and [Upgrading](upgrade.md) for existing installations.
 
 ## Choose a deployment method
 
@@ -31,8 +31,8 @@ These settings apply to all deployment methods. Store them in `.env`, `.dev.vars
 | `JWT_SECRET` | Token signing key; use a separate, strong random value |
 | `JWT_ISSUER` | Token issuer; defaults to `nomail-api` |
 | `SECRET_ENCRYPTION_KEY` | Encrypts receiver credentials; 32 random bytes encoded as Base64 |
-| `INITIAL_USERNAME` | Initial username, created only when the account table is empty |
-| `INITIAL_PASSWORD` | Initial password; at least 8 characters including letters and digits, at most 72 bytes |
+| `INITIAL_USERNAME` | Initial username; 1–64 characters, used only when the account table is empty |
+| `INITIAL_PASSWORD` | Initial password; at least 8 characters including ASCII letters and digits, at most 72 UTF-8 bytes |
 
 ### Configure the encryption key
 
@@ -51,19 +51,21 @@ Generate the JWT key and credential encryption key independently. Never commit r
 
 ### Initial account
 
-Docker, binary, and source-based servers initialize the account at first startup; Workers initialize it at first login. **Log in with the initial account and change its password before removing `INITIAL_PASSWORD` as described for your deployment.** Changing initial settings does not overwrite existing accounts.
+Set `INITIAL_USERNAME` and `INITIAL_PASSWORD` before first use. Docker, binary, and source deployments initialize the account at startup; Workers initializes it at first login. **Log in and change the initial password before removing `INITIAL_PASSWORD` as described on your deployment page.** Changing these settings never overwrites an existing account.
+
+For HTTP contracts, use the [latest OpenAPI attachment](https://github.com/neighbour-dev/nomail-api/releases/latest/download/swagger.json).
 
 ## Common post-deployment configuration
 
-- Save the server URL and account for connecting the NoMail App. Change the initial password after your first login; changing it signs out all sessions, requiring a new login.
-- Follow [Connect notification sources](sources.md) to configure both NoMail and the source platform, then test delivery. Creating a NoMail receiver does not create a platform subscription.
+- Save the server URL and account for connecting the NoMail App. Password changes sign out all sessions, requiring a new login.
+- Next, follow [Connect notification sources](sources.md).
 - Use HTTPS for public deployments, with rate limiting and abuse protection at your reverse proxy or Cloudflare.
 - Set and sanitize forwarded client IP headers correctly behind a reverse proxy. Device IPs are for display only, not access control.
-- Disable response buffering for SSE and set a read timeout longer than its 20-second heartbeat interval. SSE provides online updates only, without offline delivery or replay; query the inbox again after reconnecting.
+- Disable response buffering for SSE and set a read timeout longer than its 20-second heartbeat interval.
 
 ## Common backup and upgrade requirements
 
 - Securely preserve `JWT_SECRET`, `JWT_ISSUER`, and `SECRET_ENCRYPTION_KEY` across upgrades.
-- Check the target version's [changelog](https://github.com/neighbour-dev/nomail-api/blob/main/CHANGELOG.md) and back up before upgrading. The application does not automatically erase existing data. New migrations and a fresh-install baseline differ; this does not imply conversion support for every historical schema.
+- Before replacing code or applying migrations, read [Upgrading](upgrade.md). It is the single place for version-specific prerequisites and compatibility warnings.
 - Server and Workers use different database encodings. SQLite and D1 database files cannot be exchanged directly.
 - See each deployment page for database backups, upgrade commands, and account recovery limitations.

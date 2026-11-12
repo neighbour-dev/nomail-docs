@@ -13,6 +13,7 @@ This guide follows common tasks: understand NoMail, prepare your server, then co
 |---|---|
 | Understand the product and notification flow | [About NoMail](introduction.md) |
 | Deploy your own server | [Installation and deployment](install.md) |
+| Upgrade an existing instance | [Upgrade prerequisites](upgrade.md) |
 | Configure platform event delivery | [Connect notification sources](sources.md) |
 | Generate and preserve the server credential encryption key | [Configure the encryption key](install.md#configure-the-encryption-key) |
 

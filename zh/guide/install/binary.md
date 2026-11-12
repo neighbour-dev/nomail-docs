@@ -9,7 +9,7 @@ description: 在 Linux amd64 或 arm64 上使用 NoMail 发布二进制部署服
 
 ## 1. 下载与解压
 
-从 [GitHub Releases](https://github.com/neighbour-dev/nomail-api/releases) 下载对应架构的 `nomail-api-<版本>-linux-amd64.tar.gz` 或 `nomail-api-<版本>-linux-arm64.tar.gz`，以及 `SHA256SUMS`，放在同一目录。无需克隆源码仓库。
+从[最新正式发布版](https://github.com/neighbour-dev/nomail-api/releases/latest)下载对应架构的 `nomail-api-<版本>-linux-amd64.tar.gz` 或 `nomail-api-<版本>-linux-arm64.tar.gz`，以及 `SHA256SUMS`，放在同一目录。无需克隆源码仓库。
 
 以下以 amd64 为例，将 `vX.Y.Z` 替换为下载的版本：
 
@@ -30,7 +30,7 @@ cd nomail-server
 cp .env.example .env
 ```
 
-按[通用配置说明](../install.md#准备密钥与初始账号)填写 `.env` 中的密钥、初始用户名和密码。也可运行以下命令生成凭据加密密钥：
+按[通用配置说明](../install.md#准备密钥与初始账号)填写 `.env` 中的密钥与初始账号凭据。也可运行以下命令生成凭据加密密钥：
 
 ```bash
 ./gen-secret-key
@@ -58,11 +58,11 @@ curl http://127.0.0.1:3000/api/health
 
 `.env` 从进程当前目录加载。生产环境应通过服务管理器配置工作目录、环境变量及自动重启。
 
-首次启动会初始化账号。登录并修改密码后，移除配置中的 `INITIAL_PASSWORD` 并重启服务。接下来按[部署后的通用配置](../install.md#部署后的通用配置)准备公网访问并连接通知来源。
+登录并修改初始密码后，移除 `INITIAL_PASSWORD` 并重启服务。接下来按[部署后的通用配置](../install.md#部署后的通用配置)准备公网访问并连接通知来源。
 
 ## 备份与升级
 
-1. 核对[通用备份与升级要求](../install.md#备份与升级的通用要求)，安全保存 `.env` 和原加密密钥。
+1. 替换程序前，先完成[版本升级](../upgrade.md)中的前置步骤，安全保存 `.env` 和原加密密钥。
 2. 停止服务后备份整个数据目录，或使用 SQLite 在线备份工具。WAL 模式下不能在运行时只复制主数据库文件。
 3. 下载并校验目标版本，替换程序文件，保留原配置与数据目录，不要用示例文件覆盖 `.env`。
 4. 通过服务管理器重启，检查健康状态和日志。启动时会自动应用待执行的数据库迁移。

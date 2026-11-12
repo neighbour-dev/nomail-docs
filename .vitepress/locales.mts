@@ -48,6 +48,7 @@ export function localeTheme(english = true): DefaultTheme.Config {
               { text: 'Cloudflare Workers', link: link('/guide/install/workers') }
             ]
           },
+          { text: text('版本升级', 'Upgrading'), link: link('/guide/upgrade') },
           { text: text('连接通知来源', 'Connect notification sources'), link: link('/guide/sources') }
         ]
       },

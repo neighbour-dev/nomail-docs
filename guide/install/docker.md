@@ -9,12 +9,15 @@ Requires Docker Engine and Compose v2. No Rust installation or separate database
 
 ## 1. Get the deployment files
 
+Read the tag on the [latest stable release](https://github.com/neighbour-dev/nomail-api/releases/latest) and replace `vX.Y.Z` below with it:
+
 ```bash
-git clone https://github.com/neighbour-dev/nomail-api.git
+RELEASE_TAG=vX.Y.Z
+git clone --branch "$RELEASE_TAG" --depth 1 https://github.com/neighbour-dev/nomail-api.git
 cd nomail-api
 ```
 
-Run the following commands from the repository root. By default, `compose.yml` uses:
+Run the following commands from the repository root. By default, `compose.yml` uses the latest stable image:
 
 ```yaml
 image: ghcr.io/neighbour-dev/nomail-api:latest
@@ -22,7 +25,7 @@ image: ghcr.io/neighbour-dev/nomail-api:latest
 
 ## 2. Prepare configuration
 
-Follow the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account) to prepare independent keys and an initial username and password.
+Follow the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account) to prepare independent keys and initial account credentials.
 
 Create the configuration for a first installation only; do not overwrite an existing `.env`:
 
@@ -30,7 +33,7 @@ Create the configuration for a first installation only; do not overwrite an exis
 cp .env.example .env
 ```
 
-Edit `.env`, fill in the keys and initial account, and keep or adjust:
+Edit `.env`, fill in the keys and initial account credentials, and keep or adjust:
 
 ```dotenv
 JWT_ISSUER=nomail-api
@@ -51,7 +54,7 @@ Both `data.status` and `data.db` should be `ok`. Adjust the URL if you change `P
 
 Compose stores the database at `/data/nomail.db` in the `nomail-data` volume, overriding `.env`'s `DATABASE_PATH`. The container root filesystem is read-only; database and WAL/SHM files are written to the data volume. Do not use `docker compose down -v` unless you intend to delete all data.
 
-The initial account is created at first startup. After logging in and changing its password, remove `INITIAL_PASSWORD` from `.env` and run `docker compose up -d` again. Run this command after any later `.env` changes to apply the updated environment.
+After logging in and changing the initial password, remove `INITIAL_PASSWORD` from `.env` and run `docker compose up -d` again. Run this command after later `.env` changes to apply the updated environment.
 
 Follow the [common post-deployment configuration](../install.md#common-post-deployment-configuration) to enable public access and connect sources.
 
@@ -79,7 +82,7 @@ docker compose up -d --pull never
 
 Release images support `linux/amd64` and `linux/arm64`; Docker selects the correct architecture automatically. `latest` follows stable releases, not prereleases. Pin an explicit stable version tag (such as `vX.Y.Z`) for production.
 
-1. Review the [common backup and upgrade requirements](../install.md#common-backup-and-upgrade-requirements). Preserve configuration and the original encryption key.
+1. Complete the prerequisites in [Upgrading](../upgrade.md) before replacing the image. Preserve configuration and the original encryption key.
 2. Stop the service and back up the entire data volume, or use SQLite's online backup tools. In WAL mode, do not copy only the main database file while running.
 3. Set the target image version in `compose.yml`, then run `docker compose pull` and `docker compose up -d`. For a local image, rebuild and start with `--pull never`.
 

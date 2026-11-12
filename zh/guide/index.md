@@ -13,6 +13,7 @@ description: 从认识 NoMail 开始，选择自托管部署方式，准备服�
 |---|---|
 | 了解产品与通知流向 | [认识 NoMail](introduction.md) |
 | 部署自己的服务 | [安装与部署](install.md) |
+| 升级已有实例 | [升级前置条件](upgrade.md) |
 | 配置平台事件投递 | [连接通知来源](sources.md) |
 | 生成、保存服务端凭据加密密钥 | [安装与部署：配置加密密钥](install.md#配置加密密钥) |
 

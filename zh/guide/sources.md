@@ -24,10 +24,14 @@ NoMail 通过 Webhook 接收来源平台的事件。接入时，需要在 NoMail
 
 ## 各平台需要的凭据
 
+下表描述最新正式版服务端的支持范围，不保证每个已发布 App 版本的表单都包含全部平台。客户端缺少对应平台时，请使用兼容客户端，或按[最新版 OpenAPI 附件](https://github.com/neighbour-dev/nomail-api/releases/latest/download/swagger.json)调用接收配置接口。
+
 | 来源 | 接收凭据 | 注意事项 |
 |---|---|---|
 | Generic | 可选择无认证或 HMAC 密钥 | 公网使用建议启用认证 |
 | [GitHub](../reference/platforms/github.md) | Webhook Secret | 不是个人访问令牌 |
+| [Gitea](../reference/platforms/gitea.md) | Webhook Secret | 选择独立 Gitea 平台，不使用 GitHub 兼容模式 |
+| [App Store Connect](../reference/platforms/app-store-connect.md) | 独立 Webhook Secret | 不是 API 私钥或内购通知密钥；不支持内购/订阅 JWS 通知 |
 | [GitLab](../reference/platforms/gitlab.md) | Signing Token 或旧式 Secret Token | 按实例支持的方式配置，两种方式不可混用 |
 | [Stripe](../reference/platforms/stripe.md) | 端点 Signing Secret | 测试与正式环境、不同端点的密钥不能混用 |
 | [Slack](../reference/platforms/slack.md) | 应用 Signing Secret | 不是 Bot Token |
@@ -35,7 +39,7 @@ NoMail 通过 Webhook 接收来源平台的事件。接入时，需要在 NoMail
 | [Telegram](../reference/platforms/telegram.md) | Webhook Secret Token | 不是 Bot Token |
 | [Shopify](../reference/platforms/shopify.md) | 应用 Client Secret | 不是店铺访问令牌 |
 
-请妥善保存原始凭据，NoMail 不会通过查询配置回显秘密值。部署时的 `SECRET_ENCRYPTION_KEY` 用于保护这些凭据，与各平台的接收密钥不同，详见[安装与部署：配置加密密钥](install.md#配置加密密钥)。
+请妥善保存原始凭据，NoMail 不会通过查询配置回显秘密值。服务端加密密钥的配置统一见[安装与部署](install.md#配置加密密钥)。
 
 ## 没有收到消息时
 
@@ -44,4 +48,4 @@ NoMail 通过 Webhook 接收来源平台的事件。接入时，需要在 NoMail
 - 检查平台凭据是否对应当前应用、端点和环境。
 - 在来源平台查看投递结果，区分地址验证、认证失败和事件处理问题。
 
-需要核对签名、请求头或事件结构时，可查阅[平台协议参考](../reference/webhook-platform-reference-2026-10-30.md)。该参考包含更多平台的协议资料，不代表 NoMail 已开放其中所有平台。
+需要核对签名、请求头或事件结构时，可查阅[平台协议参考](../reference/webhook-platform-reference-2026-10-30.md)。上游协议中的交互业务响应、出站 API 调用等能力，不代表 NoMail 均已实现。

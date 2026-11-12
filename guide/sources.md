@@ -24,10 +24,14 @@ Creating a NoMail receiver does not create a platform subscription. Some platfor
 
 ## Platform credentials
 
+The table describes the latest stable backend's support, not a guarantee that every released App version exposes every platform in its forms. If your client lacks a platform, use a compatible client or the receiver configuration API in the [latest OpenAPI attachment](https://github.com/neighbour-dev/nomail-api/releases/latest/download/swagger.json).
+
 | Source | Receiver credentials | Notes |
 |---|---|---|
 | Generic | No authentication or an HMAC secret | Authentication is recommended for public endpoints |
 | [GitHub](../reference/platforms/github.md) | Webhook Secret | Not a personal access token |
+| [Gitea](../reference/platforms/gitea.md) | Webhook Secret | Select the independent Gitea provider, not GitHub compatibility mode |
+| [App Store Connect](../reference/platforms/app-store-connect.md) | Independent Webhook Secret | Not an API private key or in-app purchase/notification secret; IAP/subscription JWS notifications are not supported |
 | [GitLab](../reference/platforms/gitlab.md) | Signing Token or legacy Secret Token | Follow your instance's supported mode; do not mix them |
 | [Stripe](../reference/platforms/stripe.md) | Endpoint Signing Secret | Do not mix endpoints or test/live environment secrets |
 | [Slack](../reference/platforms/slack.md) | App Signing Secret | Not a Bot Token |
@@ -35,7 +39,7 @@ Creating a NoMail receiver does not create a platform subscription. Some platfor
 | [Telegram](../reference/platforms/telegram.md) | Webhook Secret Token | Not a Bot Token |
 | [Shopify](../reference/platforms/shopify.md) | App Client Secret | Not a store access token |
 
-Keep the original credentials safe. NoMail does not return secret values when reading a configuration. The deployment's `SECRET_ENCRYPTION_KEY` protects these credentials and is separate from platform receiver secrets. See [Configure the encryption key](install.md#configure-the-encryption-key).
+Keep the original credentials safe. NoMail does not return secret values when reading a configuration. Server-side encryption key configuration belongs to [Installation and deployment](install.md#configure-the-encryption-key).
 
 ## If messages do not arrive
 
@@ -44,4 +48,4 @@ Keep the original credentials safe. NoMail does not return secret values when re
 - Check that credentials match the current app, endpoint, and environment.
 - Review platform delivery results to distinguish URL verification, authentication failures, and event processing issues.
 
-For signatures, headers, and event structures, consult the [platform protocol reference](../reference/webhook-platform-reference-2026-10-30.md). It documents additional platforms and does not mean NoMail currently exposes every platform listed.
+For signatures, headers, and event structures, consult the [platform protocol reference](../reference/webhook-platform-reference-2026-10-30.md). Upstream protocol coverage, including interactive business responses and outbound API calls, is not a promise that NoMail implements every capability.

@@ -9,8 +9,11 @@ Requires Rust 1.99+, Node.js 22+, and a Cloudflare account. Workers uses D1 and 
 
 ## 1. Get the source and install tools
 
+Read the tag on the [latest stable release](https://github.com/neighbour-dev/nomail-api/releases/latest) and replace `vX.Y.Z` below with it:
+
 ```bash
-git clone https://github.com/neighbour-dev/nomail-api.git
+RELEASE_TAG=vX.Y.Z
+git clone --branch "$RELEASE_TAG" --depth 1 https://github.com/neighbour-dev/nomail-api.git
 cd nomail-api
 rustup target add wasm32-unknown-unknown
 cargo install worker-build --locked --version 0.8.7
@@ -31,7 +34,7 @@ Write the returned `database_id` into `wrangler.toml`. The all-zero ID is for lo
 
 ## 3. Configure remote secrets and the initial account
 
-Prepare independent keys and the initial account following the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account). Run each command and enter the real value when prompted:
+Prepare independent keys and initial account credentials following the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account). Run each command and enter the real value when prompted:
 
 ```bash
 npx wrangler secret put JWT_SECRET
@@ -53,7 +56,7 @@ npm run deploy
 
 Wrangler runs `worker-build --release` and deploys the `Realtime` Durable Object. Check `/api/health` at the deployment URL. Both `data.status` and `data.db` should be `ok`.
 
-Workers initializes the account at first login. Log in, change its password, then delete the remote initial password:
+Log in and change the initial password, then remove the remote initial password:
 
 ```bash
 npx wrangler secret delete INITIAL_PASSWORD
@@ -69,7 +72,7 @@ Local testing does not connect to the remote database. Create configuration on f
 cp .dev.vars.example .dev.vars
 ```
 
-Fill in keys and the account in `.dev.vars`, then run:
+Fill in keys and initial account credentials in `.dev.vars`, then run:
 
 ```bash
 npx wrangler d1 migrations apply DB --local
@@ -80,12 +83,12 @@ Use the local URL printed by Wrangler. Never commit `.dev.vars` or local databas
 
 ## Backups and upgrades
 
-1. Review the [common backup and upgrade requirements](../install.md#common-backup-and-upgrade-requirements). Back up keys securely; do not regenerate them for upgrades.
+1. Complete the prerequisites in [Upgrading](../upgrade.md) before applying migrations. Back up keys securely; do not regenerate them for upgrades.
 2. Use Cloudflare's D1 export or recovery facilities and verify the recovery procedure.
 3. Get the target source version, preserving resource bindings and configuration. Rerun `npm ci` if dependencies change.
 4. In `crates/nomail-workers`, confirm the target database, run `npx wrangler d1 migrations apply DB --remote`, then `npm run deploy`.
 
-See the target version's [changelog](https://github.com/neighbour-dev/nomail-api/blob/main/CHANGELOG.md) for migration effects and client compatibility. Server and Workers cannot directly exchange SQLite/D1 database files.
+Do not resume incoming requests until both migrations and deployment are complete.
 
 ## Account recovery limitations
 

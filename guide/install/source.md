@@ -9,8 +9,11 @@ Requires Rust 1.99+ and platform build tools. Suitable for modifying the backend
 
 ## 1. Get the source
 
+Read the tag on the [latest stable release](https://github.com/neighbour-dev/nomail-api/releases/latest) and replace `vX.Y.Z` below with it:
+
 ```bash
-git clone https://github.com/neighbour-dev/nomail-api.git
+RELEASE_TAG=vX.Y.Z
+git clone --branch "$RELEASE_TAG" --depth 1 https://github.com/neighbour-dev/nomail-api.git
 cd nomail-api
 ```
 
@@ -25,7 +28,7 @@ cp .env.example .env
 cargo run --locked -p nomail-server --bin gen-secret-key
 ```
 
-The generator prints a complete `SECRET_ENCRYPTION_KEY=...` line. Follow the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account) for the remaining keys and initial account. Generate `JWT_SECRET` independently.
+The generator prints a complete `SECRET_ENCRYPTION_KEY=...` line. Follow the [common configuration instructions](../install.md#prepare-keys-and-the-initial-account) for the remaining keys and initial account credentials. Generate `JWT_SECRET` independently.
 
 ## 3. Build and start
 
@@ -46,11 +49,11 @@ Both `data.status` and `data.db` should be `ok`. Adjust the URL if you change th
 
 `.env` is loaded from the process's working directory. In production, configure a working directory, environment variables, and automatic restart through a service manager.
 
-The initial account is created at first startup. Log in and change its password, then remove `INITIAL_PASSWORD` and restart. Follow the [common post-deployment configuration](../install.md#common-post-deployment-configuration) for public access and sources.
+After logging in and changing the initial password, remove `INITIAL_PASSWORD` and restart. Follow the [common post-deployment configuration](../install.md#common-post-deployment-configuration) for public access and sources.
 
 ## Backups and upgrades
 
-1. Review the [common backup and upgrade requirements](../install.md#common-backup-and-upgrade-requirements). Preserve configuration and the original encryption key.
+1. Complete the prerequisites in [Upgrading](../upgrade.md) before replacing the program. Preserve configuration and the original encryption key.
 2. Stop the service and back up the entire data directory, or use SQLite's online backup tools. In WAL mode, do not copy only the main database file while running.
 3. Get the target version's source, keep the existing `.env` and data directory, rebuild, and restart.
 4. Check health and logs. Server applies pending database migrations at startup.
